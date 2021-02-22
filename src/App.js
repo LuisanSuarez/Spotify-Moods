@@ -1,23 +1,89 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect, useRef } from "react";
+import "./App.css";
+import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
+import styled from "styled-components";
+
+import { SongProvider } from "./hooks/SongContext";
+import { TokenProvider, useTokenSelection } from "./hooks/TokenContext";
+
+import Login from "./views/Login";
+import Dashboard from "./views/Dashboard";
+import GetMusic from "./views/GetMusic";
+
+const FixedHeader = styled.header`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 10vh;
+  max-height: 100px;
+`;
 
 function App() {
+  const [playerHeight, setPlayerHeight] = useState("52px");
+  const [headerHeight, setHeaderHeight] = useState("62px");
+
+  const header = useRef(null);
+
+  const url =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:8880/"
+      : "http://localhost:8880/";
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(entries =>
+      rszObserverCallback(entries)
+    );
+    if (header.current) {
+      resizeObserver.observe(header.current);
+    }
+    return () => {
+      if (header.current) resizeObserver.unobserve(header.current);
+    };
+  }, [header.current]);
+
+  const rszObserverCallback = entries => {
+    for (let entry of entries) {
+      let newHeight = entry.contentRect.height;
+      newHeight += "px";
+      setHeaderHeight(newHeight);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div
+      className="App"
+      // style={{ marginBottom: playerHeight, marginTop: headerHeight }}
+    >
+      <SongProvider>
+        <TokenProvider>
+          <BrowserRouter>
+            <FixedHeader className="App-header" ref={header}>
+              <h1
+                className="App-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Moods
+              </h1>
+              <Link to="/dashboard/sync">Sync my Music</Link>
+              <Link to="/dashboard/play">Dashsboard</Link>
+            </FixedHeader>
+            <Switch>
+              <Route exact path="/" component={Login} />
+              <Route exact path="/login" component={Login} />
+              <Route path="/dashboard">
+                <Dashboard
+                  setPlayerHeight={setPlayerHeight}
+                  playerHeight={playerHeight}
+                  headerHeight={headerHeight}
+                />
+              </Route>
+              <Route path="dashboard/sync" component={GetMusic} />
+            </Switch>
+          </BrowserRouter>
+        </TokenProvider>
+      </SongProvider>
     </div>
   );
 }
