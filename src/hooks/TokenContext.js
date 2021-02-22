@@ -18,7 +18,6 @@ export function TokenProvider({ children }) {
 
   function selectToken(token) {
     //check if token is correct
-    console.log({ token });
     setToken(token);
   }
 

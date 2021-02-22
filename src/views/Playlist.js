@@ -1,6 +1,5 @@
-import { useEffect } from "react";
-
 import axios from "axios";
+import { useEffect } from "react";
 
 function Playlist() {
   const spotifyUrl = "https://api.spotify.com/v1/me/";
@@ -35,11 +34,6 @@ function Playlist() {
     console.log(0);
     while (requestUrl) {
       playlistResponse = await axios.get(requestUrl, { headers });
-      //   axios
-      //     .get(requestUrl, { headers })
-      //     .then(playlistResponse => {
-      //       console.log({ playlistResponse });
-      //   setTimeout(() => {
       if (playlistResponse.data.tracks) {
         moodsPlaylist = moodsPlaylist.concat(
           playlistResponse.data.tracks.items

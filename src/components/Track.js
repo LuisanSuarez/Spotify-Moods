@@ -1,8 +1,8 @@
-import React, { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
 import styled from "styled-components";
-import Tags from "./Tags";
 import { useSongSelection } from "../hooks/SongContext";
+import Tags from "./Tags";
 import TagsSelection from "./TagsSelection";
 import PlayButton from "./utilities/PlayButton";
 
@@ -18,19 +18,11 @@ const TrackContainer = styled.div`
   background-color: lightgray;
   opacity: 0.5;
   transition: opacity ease-in-out 1s;
-
-  &:hover {
-    opacity: 1;
-    transition: opacity ease-in-out 0.4s;
-  }
 `;
 
 export default function Track({
-  // handleClick,
-  hsetSong,
   track = { image: "", name: "", uri: "" },
   trackTags,
-  index,
   tagsCount,
 }) {
   const [tags, setTags] = useState(trackTags ? trackTags : []);
@@ -49,9 +41,6 @@ export default function Track({
     const newTags = [...tags, newTag];
     setTags(newTags);
     const trackId = track.id;
-    //save tags in database
-    //update tags in song
-    //update song in tags
     const result = await axios.post(url + "api/loadTags", {
       newTag,
       newTags,
@@ -61,7 +50,6 @@ export default function Track({
       alert("there was an error updating your tags. please try again");
       setTags(prevTags);
     }
-    // updateTags(newTag, true);
   };
 
   const deleteTag = async deleteIndex => {
@@ -76,25 +64,6 @@ export default function Track({
     });
 
     setTags(newTags);
-  };
-
-  const updateTags = (tag, increase) => {
-    const updatedTag = {
-      [tag]: tagsCount[tag] ? tagsCount[tag] + (increase ? 1 : -1) : 1,
-    };
-    const newTagsCount = Object.assign(tagsCount, updatedTag);
-
-    if (updatedTag[tag] === 0) delete newTagsCount[tag];
-
-    userTags
-      .doc("tags")
-      .update({ tags: newTagsCount })
-      .then(res => {
-        console.log({ res });
-      })
-      .catch(err => {
-        console.log({ err });
-      });
   };
 
   const editTag = editIndex => {

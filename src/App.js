@@ -1,14 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import "./App.css";
-import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
-
+import "./App.css";
 import { SongProvider } from "./hooks/SongContext";
-import { TokenProvider, useTokenSelection } from "./hooks/TokenContext";
-
-import Login from "./views/Login";
+import { TokenProvider } from "./hooks/TokenContext";
 import Dashboard from "./views/Dashboard";
 import GetMusic from "./views/GetMusic";
+import Login from "./views/Login";
 
 const FixedHeader = styled.header`
   position: fixed;
@@ -51,10 +49,7 @@ function App() {
   };
 
   return (
-    <div
-      className="App"
-      // style={{ marginBottom: playerHeight, marginTop: headerHeight }}
-    >
+    <div className="App">
       <SongProvider>
         <TokenProvider>
           <BrowserRouter>

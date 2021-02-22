@@ -1,11 +1,10 @@
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "react-spotify-web-playback";
-import { useSong } from "../hooks/SongContext";
-import Track from "./Track";
-import "./musicPlayer.css";
-
 import styled from "styled-components";
-import axios from "axios";
+import { useSong } from "../hooks/SongContext";
+import "./musicPlayer.css";
+import Track from "./Track";
 
 const TrackContainer = styled.div``;
 
@@ -23,46 +22,25 @@ function MusicPlayer({ token }) {
   const [tags, setTags] = useState([]);
 
   const callback = state => {
-    console.log("state callback:", 2);
-    // console.log({ stateTrack: state.track, song, type: state.type });
     setStatefulness(state);
   };
 
   useEffect(async () => {
-    // console.log("uri song changes:", 0);
     if (song) {
       const songTags = await getTags(song);
       setTags(songTags);
-      // console.log({ songTags, song });
     }
-    console.log({ song });
     setSelectedSong(song);
-    // if (song) {
-    //   // const setInterval(() => {
-    //   console.log();
-    //   // })
-    //   // if (!state.isPlaying && state.track?.uri !== song) {
-    //   // console.log("firing");
-    //   //   player.current.togglePlay();
-    //   // }
-    //   const songTags = await getTags(song);
-    //   setTags(songTags);
-    // console.log({ songTags, song });
-    // }
   }, [song]);
 
   useEffect(() => {}, [tags]);
 
   useEffect(() => {
-    // console.log("selected Song changes:", 1);
-    // console.log({ state });
     setWait(!wait);
   }, [selectedSong]);
 
   useEffect(async () => {
-    // console.log("wait changes");
     if (!state.isPlaying && state.track?.uri !== song) {
-      // console.log("firing");
       player.current.togglePlay();
     }
   }, [wait]);
@@ -80,10 +58,8 @@ function MusicPlayer({ token }) {
         <TrackContainer>
           <Track
             key={state.track?.id}
-            // handleClick={handleClick}
             track={state.track}
             trackTags={tags}
-            // index={index}
             tagsCount={{}}
           />
         </TrackContainer>

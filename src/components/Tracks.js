@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import tracksService from "../services/tracksService";
 import playlistsService from "../services/playlistsService";
-
+import tracksService from "../services/tracksService";
 import Track from "./Track";
 import Error from "./utilities/Error";
 import Loading from "./utilities/Loading";
@@ -26,10 +25,6 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
       : "http://localhost:8880/";
 
   const [tracks, setTracks] = useState([]);
-  const [tokens, setTokens] = useState(
-    JSON.parse(localStorage.getItem("tokens"))
-  );
-  const [song, setSong] = useState();
   const [loading, setLoading] = useState(true);
 
   useEffect(async () => {
@@ -57,11 +52,6 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
     }
   }, [displayPlaylist]);
 
-  const handleClick = uri => {
-    setSong(uri);
-    //XXX TODO play song
-  };
-
   return (
     <>
       <h2>{playlistName}</h2>
@@ -71,10 +61,8 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
             tracks.map((track, index) => (
               <Track
                 key={track.id}
-                handleClick={handleClick}
                 track={track}
                 trackTags={track.tags}
-                index={index}
                 tagsCount={tagsCount}
               />
             ))

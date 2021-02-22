@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 const SideBarContainer = styled.div`
@@ -41,20 +41,16 @@ const MOODS = "MOODS";
 export default function SideBar({
   playlists = [],
   tags = [],
-  chooseCategory,
   setDisplayPlaylist,
   setSidebarWidth,
   sidebarMB,
 }) {
-  // creo que podria solo ser list,
-  // y los chooseCategory handlers solo le avisan arriba que pasa
   const [showPlaylists, setShowPlaylists] = useState(true);
   const sidebar = useRef(null);
 
   const setSidebarOption = category => {
     const showPlaylists = category === PLAYLISTS;
     setShowPlaylists(showPlaylists);
-    chooseCategory(showPlaylists);
   };
 
   const handleList = list => {
@@ -80,7 +76,7 @@ export default function SideBar({
       setSidebarWidth(newWidth);
     }
   };
-
+  console.log({ tags, playlists });
   return (
     <SideBarContainer className="SIDEBAR" ref={sidebar} sidebarMB={sidebarMB}>
       <NavBar>
@@ -100,7 +96,7 @@ export default function SideBar({
               </div>
             ))
           : tags.map(tag => (
-              <div key={tag.id} onClick={() => handleList(tag)}>
+              <div key={tag._id} onClick={() => handleList(tag)}>
                 <h4>{tag.tag}</h4>
               </div>
             ))}

@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import playlistsService from "../services/playlistsService";
-
-import SideBar from "../views/SideBar";
-import PlaylistCreator from "../views/PlaylistCreator";
 import Tracks from "../components/Tracks";
+import playlistsService from "../services/playlistsService";
+import PlaylistCreator from "../views/PlaylistCreator";
+import SideBar from "../views/SideBar";
 
 const ContainerFlex = styled.div`
   display: flex;
@@ -15,8 +14,6 @@ const ContainerFlex = styled.div`
   box-sizing: border-box;
   height: 100%;
 `;
-
-// margin-left: ${props => props.sidebarWidth};
 
 const MusicFlex = styled.div`
   display: flex;
@@ -29,7 +26,6 @@ export default function PlayMusic({
   headerHeight,
   playerHeight,
 }) {
-  const [showPlaylists, setShowPlaylists] = useState(true);
   const [displayPlaylist, setDisplayPlaylist] = useState({
     name: "Dev Playlist",
     id: "3y1Jndo8RSD7sOtDAXnJO0",
@@ -42,13 +38,6 @@ export default function PlayMusic({
 
   const [sidebarWidth, setSidebarWidth] = useState("16vw");
 
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8880/"
-      : "http://localhost:8880/";
-
-  const spotifyUrl = "https://api.spotify.com/v1/me/";
-
   useEffect(async () => {
     const allTags = await playlistsService.getTags();
 
@@ -57,27 +46,18 @@ export default function PlayMusic({
 
   useEffect(async () => {
     const allPlaylists = await playlistsService.getPlaylistsNames();
-    // Array(10)
-    //   .fill("playlist")
-    //   .forEach(name => allPlaylists.push({ name, id: name }));
     setAllPlaylists(allPlaylists);
   }, []);
 
-  const chooseCategory = showPlaylists => {
-    setShowPlaylists(showPlaylists);
-  };
-
   return (
-    // <div>
     <ContainerFlex
       sidebarWidth={sidebarWidth}
       playerHeight={playerHeight}
       headerHeight={headerHeight}
     >
       <SideBar
-        chooseCategory={chooseCategory}
         playlists={allPlaylists}
-        tags={[{ tag: "Untagged songs" }, ...allTags]}
+        tags={[{ _id: "Untagged songs", tag: "Untagged songs" }, ...allTags]}
         setDisplayPlaylist={setDisplayPlaylist}
         setSidebarWidth={setSidebarWidth}
         sidebarMB={sidebarMB}
@@ -92,6 +72,5 @@ export default function PlayMusic({
         />
       </MusicFlex>
     </ContainerFlex>
-    // </div>
   );
 }

@@ -1,30 +1,8 @@
-import axios from "axios";
-import React from "react";
-
-// class Login extends React.Component () {
-//   constructor(){
-//     super(){
-
-//     }
-//   }
 function Login() {
   const url =
     process.env.NODE_ENV === "development"
       ? "http://localhost:8880/"
       : "http://localhost:8880/";
-  console.log({ url });
-  function doLogin() {
-    console.log(0);
-    axios
-      .get(url + "auth/login")
-      .then(res => {
-        console.log({ res });
-      })
-      .catch(err => {
-        console.log({ err });
-      });
-    console.log(1);
-  }
 
   return (
     <div className="container">
