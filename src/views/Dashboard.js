@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from "react";
-import { useTokenSelection } from "../hooks/TokenContext";
-import { Route, useHistory } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import { Route, useHistory } from "react-router-dom";
 import styled from "styled-components";
-import authService from "../services/authService";
-
-import PlayMusic from "../views/PlayMusic";
-import GetMusic from "../views/GetMusic";
-
 import MusicPlayer from "../components/MusicPlayer";
+import { useTokenSelection } from "../hooks/TokenContext";
+import { devUrl, prodUrl } from "../services/variables";
+import GetMusic from "../views/GetMusic";
+import PlayMusic from "../views/PlayMusic";
+import SpotifyAuth from "./SpotifyAuth";
 
 const FixedBottom = styled.div`
   position: fixed;
@@ -16,15 +16,12 @@ const FixedBottom = styled.div`
   width: 100%;
 `;
 
-const url =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:8880/"
-    : "http://localhost:8880/";
-
 function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
   const [tokens, setTokens] = useState(
     JSON.parse(localStorage.getItem("tokens"))
   );
+
+  const [dbName, setDbName] = useState(localStorage.getItem("dbName") || null);
 
   const [expiryTime, setExpiryTime] = useState(
     JSON.parse(localStorage.getItem("expiryTime")) || null
@@ -41,31 +38,33 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
 
   const setTokenContext = useTokenSelection();
 
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
+  const { user, isAuthenticated, isLoading } = useAuth0();
+
   useEffect(async () => {
-    if (tokens) return;
-    try {
-      let tokens = await authService.getTokens();
-      if (!tokens || !tokens.access_token) {
-        alert("you session has ended");
-        redirectToLogin();
-        return;
-      }
+    if (dbName && tokens) return;
+    const urlParams = new URLSearchParams(window.location.pathname);
+    const newDbName = urlParams.get("dbName");
+    const access_token = urlParams.get("access_token");
+    const refresh_token = urlParams.get("refresh_token");
+    if (newDbName) {
+      localStorage.setItem("dbName", newDbName);
+      setDbName(newDbName);
+    }
+    if (access_token && refresh_token) {
+      const tokens = { access_token, refresh_token };
       localStorage.setItem("tokens", JSON.stringify(tokens));
-      const newExpiryTime = new Date().getTime() + tokens.expires_in * 1000;
-      localStorage.setItem("expiryTime", JSON.stringify(newExpiryTime));
-      setExpiryTime(newExpiryTime);
-      setHeaders({ authorization: "Bearer " + tokens.access_token });
       setTokens(tokens);
       setTokenContext(tokens);
-    } catch (err) {
-      if (err.data) {
-        console.error({
-          STATUS_CODE: err.data.status,
-          ERROR_MESSAGE: err.data.message,
-        });
-      } else {
-        console.error(err);
-      }
+      setHeaders({ authorization: "Bearer◘ " + tokens.access_token });
+
+      const newExpiryTime = new Date().getTime() + 3600 * 1000;
+      localStorage.setItem("expiryTime", JSON.stringify(newExpiryTime));
+      setExpiryTime(newExpiryTime);
+    } else {
+      alert("you session has ended");
+      localStorage.setItem("redirectedToLogin", true);
+      redirectToLogin();
     }
   }, []);
 
@@ -136,7 +135,7 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
     );
     if (!redirectedToLogin) {
       localStorage.setItem("redirectedToLogin", "true");
-      history.push("/login");
+      history.push("/");
       history.go(0);
     }
   };
@@ -155,7 +154,12 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
           playerHeight={playerHeight}
         />
       </Route>
-      <Route path="/dashboard/sync" component={GetMusic} />
+      <Route path="/dashboard/sync">
+        <GetMusic headerHeight={headerHeight} playerHeight={playerHeight} />
+      </Route>
+      <Route path="/dashboard/spotifylogin">
+        <SpotifyAuth headerHeight={headerHeight} playerHeight={playerHeight} />
+      </Route>
       <FixedBottom ref={player}>
         <MusicPlayer token={tokens?.access_token} className="PLAYER" />
       </FixedBottom>

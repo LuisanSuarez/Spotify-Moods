@@ -4,6 +4,7 @@ import styled from "styled-components";
 import "./App.css";
 import { SongProvider } from "./hooks/SongContext";
 import { TokenProvider } from "./hooks/TokenContext";
+import { devUrl, prodUrl } from "./services/variables";
 import Dashboard from "./views/Dashboard";
 import GetMusic from "./views/GetMusic";
 import Login from "./views/Login";
@@ -23,10 +24,7 @@ function App() {
 
   const header = useRef(null);
 
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8880/"
-      : "http://localhost:8880/";
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(entries =>

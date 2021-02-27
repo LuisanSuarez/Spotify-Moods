@@ -1,10 +1,11 @@
+import { Auth0Provider } from "@auth0/auth0-react";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import reportWebVitals from "./reportWebVitals";
 import { createGlobalStyle } from "styled-components";
+import App from "./App";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
 
 const GlobalStyle = createGlobalStyle`
 body {
@@ -22,8 +23,14 @@ body {
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <GlobalStyle></GlobalStyle>
-      <App />
+      <Auth0Provider
+        domain="luisan-suarez.auth0.com"
+        clientId="uMRixSiSINmL1VfdPMTUMFiMJ8QMlPOo"
+        redirectUri={window.location.origin + "/dashboard/play"}
+      >
+        <GlobalStyle></GlobalStyle>
+        <App />
+      </Auth0Provider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")

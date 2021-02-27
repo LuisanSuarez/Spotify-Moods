@@ -1,10 +1,13 @@
 import axios from "axios";
 import { useEffect } from "react";
+import { spotifyUrl } from "../services/variables";
 
 function Playlist() {
-  const spotifyUrl = "https://api.spotify.com/v1/me/";
+  // const spotifyUrl = "https://api.spotify.com/v1/me/";
   const limit = "?limit=50";
   const moodsPlaylistName = "Por escuchar".toLowerCase();
+
+  // axios.defaults.withCredentials = false;
 
   useEffect(async () => {
     let requestUrl = spotifyUrl + "playlists" + limit;
@@ -31,7 +34,6 @@ function Playlist() {
 
     let moodsPlaylist = [];
     let playlistResponse;
-    console.log(0);
     while (requestUrl) {
       playlistResponse = await axios.get(requestUrl, { headers });
       if (playlistResponse.data.tracks) {
@@ -40,17 +42,9 @@ function Playlist() {
         );
         requestUrl = playlistResponse.data.tracks.next;
       } else {
-        console.log({ playlistResponse });
         requestUrl = null;
       }
-      console.log({ moodsPlaylist, playlistResponse });
     }
-    console.log({
-      moodsPlaylist,
-      total: playlistResponse.data.tracks,
-      length: moodsPlaylist.length,
-    });
-    console.log(0);
   }, []);
   return (
     <div>

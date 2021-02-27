@@ -76,7 +76,6 @@ export default function SideBar({
       setSidebarWidth(newWidth);
     }
   };
-  console.log({ tags, playlists });
   return (
     <SideBarContainer className="SIDEBAR" ref={sidebar} sidebarMB={sidebarMB}>
       <NavBar>

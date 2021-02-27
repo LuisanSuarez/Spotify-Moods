@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import styled from "styled-components";
 import { useSongSelection } from "../hooks/SongContext";
+import { devUrl, prodUrl } from "../services/variables";
 import Tags from "./Tags";
 import TagsSelection from "./TagsSelection";
 import PlayButton from "./utilities/PlayButton";
@@ -30,10 +31,7 @@ export default function Track({
 
   const { image, name, uri } = track;
 
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8880/"
-      : "http://localhost:8880/";
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const handleNewTag = async newTag => {
     if (!newTag) return;

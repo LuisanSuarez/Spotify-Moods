@@ -1,8 +1,10 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import LoginButton from "../components/LoginButton";
+import { devUrl, prodUrl } from "../services/variables";
+
 function Login() {
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8880/"
-      : "http://localhost:8880/";
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
+  const { user, isAuthenticated, isLoading } = useAuth0();
 
   return (
     <div className="container">
@@ -25,7 +27,7 @@ function Login() {
           Obtain new token using the refresh token
         </button>
       </div>
-
+      <LoginButton />
       <h1>LOGIN SCREEN</h1>
     </div>
   );

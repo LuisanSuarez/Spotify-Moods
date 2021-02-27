@@ -1,10 +1,10 @@
 const axios = require("axios");
+const { devUrl, prodUrl } = require("./variables");
 
 const tracksService = () => {
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8880/"
-      : "http://localhost:8880/";
+  const dbName = localStorage.getItem("dbName");
+  const options = { params: { dbName } };
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const sanitizeTracksArray = rawTracks => {
     return rawTracks.map(trackData => {
@@ -38,18 +38,39 @@ const tracksService = () => {
     return newTracksArray;
   };
 
-  const getTracksBulk = async playlists => {
+  const getTracksBulk = async playlistsArray => {
     const tracks = [];
+    const playlists = [...playlistsArray];
+
     while (playlists.length) {
-      const result = await axios.get(url + "api/getTracksBulk", {
-        params: { playlists: playlists.splice(0, 100) },
-      });
+      options.params.playlists = playlists.splice(0, 100);
+      const result = await axios.get(url + "api/getTracksBulk", options);
       result.data.forEach(song => tracks.push(song));
     }
+
+    delete options.params.playlists;
     return tracks;
   };
 
-  return { sanitizeTracksArray, addImagePropertyToLegacyTracks, getTracksBulk };
+  const addTracksToDatabase = async tracksArray => {
+    const tracks = [...tracksArray];
+    while (tracks) {
+      const result = await axios.post(
+        url + "api/loadTracksFromPlaylist",
+        {
+          tracks: tracks.splice(0, 100),
+        },
+        options
+      );
+    }
+  };
+
+  return {
+    sanitizeTracksArray,
+    addImagePropertyToLegacyTracks,
+    getTracksBulk,
+    addTracksToDatabase,
+  };
 };
 
 module.exports = tracksService();

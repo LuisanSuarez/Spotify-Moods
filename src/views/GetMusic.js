@@ -1,11 +1,13 @@
 import React from "react";
 import PlaylistSelection from "../components/PlaylistSelection";
 
-export default function GetMusic() {
+export default function GetMusic({ headerHeight, playerHeight }) {
   return (
     <div>
-      <h1>Load your Music to Moods</h1>
-      <PlaylistSelection selectedPlaylists playlists />
+      <PlaylistSelection
+        playerHeight={playerHeight}
+        headerHeight={headerHeight}
+      />
     </div>
   );
 }

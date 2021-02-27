@@ -1,10 +1,8 @@
 const axios = require("axios");
+const { devUrl, prodUrl } = require("./variables");
 
 const authService = () => {
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8880/"
-      : "http://localhost:8880/";
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const setTokens = () => {
     "setTokens";
@@ -18,7 +16,7 @@ const authService = () => {
     if (headers) return headers;
     let tokens = JSON.parse(localStorage.getItem("tokens")) || getTokens();
     headers = { authorization: "Bearer " + tokens.access_token };
-    console.log({ headers });
+
     return headers;
   };
 

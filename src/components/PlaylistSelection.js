@@ -1,11 +1,24 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Playlist from "./Playlist";
-import tracksService from "../services/tracksService";
-import Loading from "./utilities/Loading";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 import likedSongsImg from "../assets/img/play-button.png";
+import playlistsService from "../services/playlistsService";
+import spotifyService from "../services/spotifyService";
+import tracksService from "../services/tracksService";
+import { devUrl, prodUrl, spotifySavedTracks } from "../services/variables";
+import Playlist from "./Playlist";
+import Loading from "./utilities/Loading";
 
-export default function PlaylistSelection() {
+const ContainerFlex = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-top: ${props => props.headerHeight};
+  padding-bottom: ${props => props.playerHeight};
+  box-sizing: border-box;
+  height: 100%;
+`;
+
+export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylists, xyz] = useState(new Set());
 
@@ -13,21 +26,18 @@ export default function PlaylistSelection() {
     JSON.parse(localStorage.getItem("tokens"))
   );
 
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8880/"
-      : "http://localhost:8880/";
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
-  const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists/";
-  const savedTracks = "https://api.spotify.com/v1/me/tracks";
+  // const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists/";
+  // const savedTracks = "https://api.spotify.com/v1/me/tracks";
 
   useEffect(async () => {
-    const fetchedPlaylists = await fetchPlaylists();
+    const fetchedPlaylists = await spotifyService.fetchPlaylists();
     if (!fetchedPlaylists.error) {
       const likedSongs = {
         name: "Liked Songs",
         id: "Liked_Songs",
-        tracks: { href: savedTracks },
+        tracks: { href: spotifySavedTracks },
         images: [likedSongsImg],
       };
       setPlaylists([likedSongs, ...fetchedPlaylists.data]);
@@ -36,37 +46,43 @@ export default function PlaylistSelection() {
     }
   }, []);
 
-  const fetchPlaylists = async () => {
-    return fetch(spotifyPlaylists);
-  };
+  // const fetchPlaylists = async () => {
+  //   console.log({ spotifyPlaylists });
+  //   return fetch(spotifyPlaylists);
+  // };
 
-  const fetchTracks = async url => {
-    console.log({ url });
-    return await fetch(url);
-  };
+  // const fetchTracks = async url => {
+  //   return await fetch(url);
+  // };
 
-  const fetch = async url => {
-    let result;
-    try {
-      const headers = {
-        authorization: "Bearer " + tokens.access_token,
-      };
+  // const fetch = async url => {
+  //   console.count("CORS error");
+  //   let result;
+  //   try {
+  //     console.count("CORS error");
+  //     const headers = {
+  //       authorization: "Bearer " + tokens.access_token,
+  //     };
 
-      let playlists = [];
-      let response;
+  //     let playlists = [];
+  //     let response;
 
-      do {
-        response = await axios.get(url, { headers });
-        playlists = [...playlists, ...response.data.items];
-        url = response.data.next;
-      } while (response.data.next);
-      result = { data: playlists, error: false };
-    } catch (err) {
-      result = { error: true, msg: err.msg };
-    } finally {
-      return result;
-    }
-  };
+  //     console.count("CORS error");
+
+  //     do {
+  //       console.count("CORS error");
+  //       response = await axios.get(url, { headers });
+  //       console.count("CORS error");
+  //       playlists = [...playlists, ...response.data.items];
+  //       url = response.data.next;
+  //     } while (response.data.next);
+  //     result = { data: playlists, error: false };
+  //   } catch (err) {
+  //     result = { error: true, msg: err.msg };
+  //   } finally {
+  //     return result;
+  //   }
+  // };
 
   const loadPlaylists = () => {
     console.log("will load");
@@ -81,53 +97,17 @@ export default function PlaylistSelection() {
     // if we want it to wait, either use a for loop or check this out
     // https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
     playlistsToFetch.forEach(async playlist => {
-      const result = await fetchTracks(playlist.tracks.href);
+      const result = await spotifyService.fetchTracks(playlist.tracks.href);
       if (!result.error) {
         const tracks = tracksService.sanitizeTracksArray(result.data);
         console.log({ tracks });
-        addTracksToDatabase(tracks);
-        // createOrUpdatePlaylistCollection(playlist.id, tracks);
-        addPlaylistToAllPlaylists(playlist);
+        tracksService.addTracksToDatabase(tracks);
+        playlistsService.createOrUpdatePlaylistCollection(playlist.id, tracks);
+        playlistsService.addPlaylistToAllPlaylists(playlist);
       } else {
         failures.push(playlist);
       }
     });
-  };
-
-  const addTracksToDatabase = async tracks => {
-    console.log({ tracks });
-    while (tracks) {
-      console.log(1, tracks.length);
-      const result = await axios.post(url + "api/loadTracksFromPlaylist", {
-        tracks: tracks.splice(0, 100),
-      });
-
-      console.log(tracks.length, { result });
-    }
-  };
-
-  const createOrUpdatePlaylistCollection = async (playlistId, tracks) => {
-    const trackIds = tracks.map(track => {
-      return { id: track.id };
-    });
-    console.log({ trackIds });
-    const result = await axios.post(
-      url + "api/createOrUpdatePlaylistCollection",
-      {
-        playlistId,
-        trackIds,
-      }
-    );
-    return result;
-  };
-
-  const addPlaylistToAllPlaylists = async playlist => {
-    const { name, id } = playlist;
-    const result = await axios.post(url + "api/addPlaylistToAllPlaylists", {
-      name,
-      id,
-    });
-    console.log({ result });
   };
 
   const handleClick = (playlistId, index) => {
@@ -143,7 +123,7 @@ export default function PlaylistSelection() {
   };
 
   return (
-    <div>
+    <ContainerFlex playerHeight={playerHeight} headerHeight={headerHeight}>
       <div onClick={() => loadPlaylists()}>
         <h2>Load Playlists</h2>
       </div>
@@ -160,6 +140,6 @@ export default function PlaylistSelection() {
           <Loading />
         )}
       </div>
-    </div>
+    </ContainerFlex>
   );
 }

@@ -3,15 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "react-spotify-web-playback";
 import styled from "styled-components";
 import { useSong } from "../hooks/SongContext";
+import { devUrl, prodUrl } from "../services/variables";
 import "./musicPlayer.css";
 import Track from "./Track";
 
 const TrackContainer = styled.div``;
-
-const url =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:8880/"
-    : "http://localhost:8880/";
 
 function MusicPlayer({ token }) {
   let song = useSong();
@@ -20,6 +16,8 @@ function MusicPlayer({ token }) {
   const [selectedSong, setSelectedSong] = useState(song);
   const [wait, setWait] = useState(true);
   const [tags, setTags] = useState([]);
+
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const callback = state => {
     setStatefulness(state);
@@ -47,7 +45,7 @@ function MusicPlayer({ token }) {
 
   const getTags = async uri => {
     let tags = await axios.get(url + "api/getSongTags", { params: { uri } });
-    tags = tags.data ? tags.data : [];
+    tags = Array.isArray(tags.data) ? tags.data : [];
     return tags;
   };
 

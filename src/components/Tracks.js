@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import playlistsService from "../services/playlistsService";
 import tracksService from "../services/tracksService";
+import { devUrl, prodUrl } from "../services/variables";
 import Track from "./Track";
 import Error from "./utilities/Error";
 import Loading from "./utilities/Loading";
@@ -19,10 +20,7 @@ const TracksContainer = styled.div`
 export default function Tracks({ tagsCount, displayPlaylist }) {
   const playlistId = displayPlaylist.id || displayPlaylist.tag;
   const playlistName = displayPlaylist.name || displayPlaylist.tag;
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8880/"
-      : "http://localhost:8880/";
+  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
