@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { devUrl, prodUrl } = require("./variables");
 
-const tracksService = () => {
+export default function tracksService() {
   const dbName = localStorage.getItem("dbName");
   const options = { params: { dbName } };
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
@@ -71,9 +71,9 @@ const tracksService = () => {
     getTracksBulk,
     addTracksToDatabase,
   };
-};
+}
 
-module.exports = tracksService();
+// module.exports = tracksService();
 
 // const sanitizeTracksObject = rawTracks => {
 //   const tracks = {};

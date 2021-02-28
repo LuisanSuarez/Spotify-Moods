@@ -7,7 +7,7 @@ const {
 axios.defaults.withCredentials = false;
 const tokens = JSON.parse(localStorage.getItem("tokens"));
 
-const spotifyService = () => {
+export default function spotifyService() {
   const fetchPlaylists = async () => {
     return fetch(spotifyPlaylists);
   };
@@ -47,5 +47,5 @@ const spotifyService = () => {
     fetchPlaylists,
     fetchTracks,
   };
-};
-module.exports = spotifyService();
+}
+// module.exports = spotifyService();

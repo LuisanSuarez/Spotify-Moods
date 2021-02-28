@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { devUrl, prodUrl } = require("./variables");
 
-const authService = () => {
+export default function authService() {
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const setTokens = () => {
@@ -21,6 +21,6 @@ const authService = () => {
   };
 
   return { setTokens, getTokens, getHeaders };
-};
+}
 
-module.exports = authService();
+// module.exports = authService();

@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { devUrl, prodUrl } = require("./variables");
 
-const playlistsService = () => {
+export default function playlistsService() {
   const dbName = localStorage.getItem("dbName");
   const options = { params: { dbName } };
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
@@ -64,6 +64,6 @@ const playlistsService = () => {
     addPlaylistToAllPlaylists,
     createOrUpdatePlaylistCollection,
   };
-};
+}
 
-module.exports = playlistsService();
+// module.exports = playlistsService();

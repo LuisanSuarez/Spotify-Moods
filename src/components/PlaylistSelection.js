@@ -32,7 +32,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   // const savedTracks = "https://api.spotify.com/v1/me/tracks";
 
   useEffect(async () => {
-    const fetchedPlaylists = await spotifyService.fetchPlaylists();
+    const fetchedPlaylists = await spotifyService().fetchPlaylists();
     if (!fetchedPlaylists.error) {
       const likedSongs = {
         name: "Liked Songs",
@@ -46,46 +46,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     }
   }, []);
 
-  // const fetchPlaylists = async () => {
-  //   console.log({ spotifyPlaylists });
-  //   return fetch(spotifyPlaylists);
-  // };
-
-  // const fetchTracks = async url => {
-  //   return await fetch(url);
-  // };
-
-  // const fetch = async url => {
-  //   console.count("CORS error");
-  //   let result;
-  //   try {
-  //     console.count("CORS error");
-  //     const headers = {
-  //       authorization: "Bearer " + tokens.access_token,
-  //     };
-
-  //     let playlists = [];
-  //     let response;
-
-  //     console.count("CORS error");
-
-  //     do {
-  //       console.count("CORS error");
-  //       response = await axios.get(url, { headers });
-  //       console.count("CORS error");
-  //       playlists = [...playlists, ...response.data.items];
-  //       url = response.data.next;
-  //     } while (response.data.next);
-  //     result = { data: playlists, error: false };
-  //   } catch (err) {
-  //     result = { error: true, msg: err.msg };
-  //   } finally {
-  //     return result;
-  //   }
-  // };
-
   const loadPlaylists = () => {
-    console.log("will load");
     const playlistsCopy = [...playlists];
     const playlistsToFetch = playlistsCopy.filter(playlist =>
       selectedPlaylists.delete(playlist.id)
@@ -97,13 +58,15 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     // if we want it to wait, either use a for loop or check this out
     // https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
     playlistsToFetch.forEach(async playlist => {
-      const result = await spotifyService.fetchTracks(playlist.tracks.href);
+      const result = await spotifyService().fetchTracks(playlist.tracks.href);
       if (!result.error) {
-        const tracks = tracksService.sanitizeTracksArray(result.data);
-        console.log({ tracks });
-        tracksService.addTracksToDatabase(tracks);
-        playlistsService.createOrUpdatePlaylistCollection(playlist.id, tracks);
-        playlistsService.addPlaylistToAllPlaylists(playlist);
+        const tracks = tracksService().sanitizeTracksArray(result.data);
+        tracksService().addTracksToDatabase(tracks);
+        playlistsService().createOrUpdatePlaylistCollection(
+          playlist.id,
+          tracks
+        );
+        playlistsService().addPlaylistToAllPlaylists(playlist);
       } else {
         failures.push(playlist);
       }

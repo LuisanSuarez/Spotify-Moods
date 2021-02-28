@@ -39,13 +39,13 @@ export default function PlayMusic({
   const [sidebarWidth, setSidebarWidth] = useState("16vw");
 
   useEffect(async () => {
-    const allTags = await playlistsService.getTags();
+    const allTags = await playlistsService().getTags();
 
     setAllTags(allTags);
   }, []);
 
   useEffect(async () => {
-    const allPlaylists = await playlistsService.getPlaylistsNames();
+    const allPlaylists = await playlistsService().getPlaylistsNames();
     setAllPlaylists(allPlaylists);
   }, []);
 

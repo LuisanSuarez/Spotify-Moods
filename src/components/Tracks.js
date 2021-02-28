@@ -34,10 +34,10 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
     let tracksIds;
     try {
       if (playlistId === "Untagged songs") {
-        newTracks = await playlistsService.getUntaggedSongs();
+        newTracks = await playlistsService().getUntaggedSongs();
       } else {
-        tracksIds = await playlistsService.getPlaylistTrackIds(playlistId);
-        newTracks = await tracksService.getTracksBulk(tracksIds);
+        tracksIds = await playlistsService().getPlaylistTrackIds(playlistId);
+        newTracks = await tracksService().getTracksBulk(tracksIds);
       }
     } catch (error) {
       console.error(error);

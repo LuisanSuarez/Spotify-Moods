@@ -19,7 +19,7 @@ export default function PlaylistCreator({ tags }) {
 
   const tagLabels = tags.map(tag => tag.tag);
 
-  let headers = authService.getHeaders();
+  let headers = authService().getHeaders();
 
   const createPlaylist = async () => {
     const includedSongs = new Set();
