@@ -38,6 +38,7 @@ function MusicPlayer({ token }) {
   }, [selectedSong]);
 
   useEffect(async () => {
+    if (!player.current) return;
     if (!state.isPlaying && state.track?.uri !== song) {
       player.current.togglePlay();
     }
@@ -49,7 +50,7 @@ function MusicPlayer({ token }) {
     return tags;
   };
 
-  return (
+  return token ? (
     <>
       {" "}
       {song ? (
@@ -75,6 +76,8 @@ function MusicPlayer({ token }) {
         />
       </div>
     </>
+  ) : (
+    ""
   );
 }
 
