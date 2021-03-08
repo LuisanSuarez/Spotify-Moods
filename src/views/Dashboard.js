@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Route, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import MusicPlayer from "../components/MusicPlayer";
@@ -56,7 +56,7 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
       localStorage.setItem("tokens", JSON.stringify(tokens));
       setTokens(tokens);
       setTokenContext(tokens);
-      setHeaders({ authorization: "Bearer◘ " + tokens.access_token });
+      setHeaders({ authorization: "Bearer " + tokens.access_token });
 
       const newExpiryTime = new Date().getTime() + 3600 * 1000;
       localStorage.setItem("expiryTime", JSON.stringify(newExpiryTime));
