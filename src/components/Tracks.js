@@ -52,9 +52,9 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
 
   return (
     <>
-      <h2>{playlistName}</h2>
       {displayPlaylist && !loading ? (
         <TracksContainer>
+          <h2>{playlistName}</h2>
           {tracks[0] ? (
             tracks.map((track, index) => (
               <Track
@@ -72,7 +72,10 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
           )}
         </TracksContainer>
       ) : (
-        <Loading />
+        <>
+          <h2>{playlistName}</h2>
+          <Loading />
+        </>
       )}
     </>
   );

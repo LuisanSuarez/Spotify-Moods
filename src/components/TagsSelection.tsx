@@ -5,10 +5,23 @@ import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import React from "react";
+import { COLOR } from "../services/variables";
+
+const WIDTH = 160;
 
 const useStyles = makeStyles(theme => ({
   root: {
-    width: 300,
+    "& input, input::placeholder, path": {
+      color: COLOR.thirty,
+    },
+    "& fieldset": {
+      borderColor: COLOR.thirty,
+      "& legend span": {
+        color: COLOR.thirty,
+      },
+    },
+    width: WIDTH,
+    margin: "0 10px",
     "& > * + *": {
       marginTop: theme.spacing(3),
       marginRight: theme.spacing(3),
@@ -124,14 +137,11 @@ const TagsSelection = ({ options, type, label, submit }: AppProps) => {
           options={options}
           getOptionLabel={option => option}
           renderOption={option => option}
-          style={{ width: 300 }}
+          style={{ width: WIDTH }}
+          classes={{ root: classes.root }}
           freeSolo
           renderInput={params => (
-            <TextField
-              {...params}
-              label="Free solo with text demo"
-              variant="outlined"
-            />
+            <TextField {...params} label={label} variant="outlined" />
           )}
         />
       ) : (
