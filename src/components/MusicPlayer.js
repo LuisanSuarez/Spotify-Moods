@@ -24,6 +24,8 @@ function MusicPlayer({ token }) {
   };
 
   const artistsAsArray = state => {
+    if (Array.isArray(state.track.artists)) return state;
+
     const newState = Object.assign({}, state);
     const artists =
       typeof newState.track.artists === "string"
