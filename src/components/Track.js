@@ -88,9 +88,8 @@ export default function Track({
   const [tags, setTags] = useState(trackTags ? trackTags : []);
   const setSong = useSongSelection();
 
-  console.log({ track });
-
-  const { image, name, uri, artists } = track;
+  let { image, name, uri, artists } = track;
+  artists = artists ? artists : [];
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
@@ -128,7 +127,6 @@ export default function Track({
   const editTag = editIndex => {
     console.log("figure out a way to edit tags later");
   };
-
   return (
     <TrackContainer>
       <TrackFocus>

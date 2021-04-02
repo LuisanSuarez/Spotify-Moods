@@ -46,7 +46,6 @@ function App() {
     }
   };
 
-  const warn = 0;
   return (
     <div className="App">
       <SongProvider>
@@ -71,7 +70,6 @@ function App() {
                   setPlayerHeight={setPlayerHeight}
                   playerHeight={playerHeight}
                   headerHeight={headerHeight}
-                  warn
                 />
               </Route>
               <Route path="dashboard/sync" component={GetMusic} />

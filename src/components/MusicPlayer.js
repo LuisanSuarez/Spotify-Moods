@@ -20,7 +20,23 @@ function MusicPlayer({ token }) {
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const callback = state => {
-    setStatefulness(state);
+    setStatefulness(artistsAsArray(state));
+  };
+
+  const artistsAsArray = state => {
+    const newState = Object.assign({}, state);
+    const artists =
+      typeof newState.track.artists === "string"
+        ? newState.track.artists.split(", ")
+        : [""];
+
+    const addNameProp = name => {
+      return { name: name };
+    };
+    const mappedArtists = artists[0] ? artists.map(addNameProp) : "";
+
+    newState.track.artists = mappedArtists;
+    return newState;
   };
 
   useEffect(async () => {
@@ -49,7 +65,6 @@ function MusicPlayer({ token }) {
     tags = Array.isArray(tags.data) ? tags.data : [];
     return tags;
   };
-
   return token ? (
     <>
       {" "}

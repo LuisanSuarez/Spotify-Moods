@@ -18,7 +18,6 @@ const useStyles = makeStyles(theme => ({
 
 function renderRow(props) {
   const { index, style, data } = props;
-  console.log({ index, style, data });
   const item = data[index];
 
   return (
@@ -44,7 +43,6 @@ export default function VirtualizedList({ items, deleteTag, editTag }) {
   const functionItems = items.map(item => {
     return { item, deleteTag, editTag };
   });
-  console.log({ functionItems });
 
   return (
     <div className={classes.root}>
