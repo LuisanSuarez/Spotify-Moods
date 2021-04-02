@@ -49,6 +49,7 @@ export default function PlayMusic({
     setAllPlaylists(allPlaylists);
   }, []);
 
+  console.log({ displayPlaylist });
   return (
     <ContainerFlex
       sidebarWidth={sidebarWidth}
@@ -58,6 +59,7 @@ export default function PlayMusic({
       <SideBar
         playlists={allPlaylists}
         tags={[{ _id: "Untagged songs", tag: "Untagged songs" }, ...allTags]}
+        displayPlaylist={displayPlaylist}
         setDisplayPlaylist={setDisplayPlaylist}
         setSidebarWidth={setSidebarWidth}
         sidebarMB={sidebarMB}

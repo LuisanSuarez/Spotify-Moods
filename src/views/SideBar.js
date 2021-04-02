@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { COLOR } from "../services/variables";
 
 const SideBarContainer = styled.div`
   display: flex;
@@ -30,9 +31,24 @@ const ListsDisplay = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background: pink;
+  background: ${COLOR.sixtyDarker};
   height: 100%;
   overflow-y: scroll;
+`;
+
+const Item = styled.div`
+  width: 97%;
+  border: 2px solid ${COLOR.sixtyLighter};
+  transform: translateX(-1px);
+  background: ${props =>
+    props.isSelected ? COLOR.transparentShade : "transparent"};
+  &:hover {
+    background: ${COLOR.transparentShade};
+  }
+`;
+
+const ItemName = styled.h4`
+  color: ${COLOR.sixtyLighter};
 `;
 
 const PLAYLISTS = "PLAYLISTS";
@@ -41,6 +57,7 @@ const MOODS = "MOODS";
 export default function SideBar({
   playlists = [],
   tags = [],
+  displayPlaylist = { id: "" },
   setDisplayPlaylist,
   setSidebarWidth,
   sidebarMB,
@@ -90,14 +107,22 @@ export default function SideBar({
         {showPlaylists
           ? playlists.map(playlist => (
               //make this a component
-              <div key={playlist.id} onClick={() => handleList(playlist)}>
-                <h4>{playlist.name}</h4>
-              </div>
+              <Item
+                key={playlist.id}
+                onClick={() => handleList(playlist)}
+                isSelected={displayPlaylist._id === playlist._id}
+              >
+                <ItemName>{playlist.name}</ItemName>
+              </Item>
             ))
           : tags.map(tag => (
-              <div key={tag._id} onClick={() => handleList(tag)}>
-                <h4>{tag.tag}</h4>
-              </div>
+              <Item
+                key={tag._id}
+                onClick={() => handleList(tag)}
+                isSelected={displayPlaylist._id === tag._id}
+              >
+                <ItemName>{tag.tag}</ItemName>
+              </Item>
             ))}
       </ListsDisplay>
     </SideBarContainer>

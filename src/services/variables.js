@@ -7,7 +7,9 @@ const variables = {
   spotifySavedTracks: "https://api.spotify.com/v1/me/tracks",
 
   COLOR: {
-    sixty: "#22330b",
+    sixty: "#053225",
+    sixtyDarker: "#04251C",
+    sixtyLighter: "#60A592",
     sixtyTranslucent: "rgba(34, 51, 11, 0.6)",
     sixtyTransparent: "rgba(34, 51, 11, 0.3)",
     thirty: "#61dafb",
