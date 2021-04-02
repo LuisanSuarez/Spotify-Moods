@@ -14,16 +14,23 @@ const SideBarContainer = styled.div`
 
 const NavBar = styled.nav`
   height: auto;
-  background: blue;
+  background: ${COLOR.sixtyDark};
   display: flex;
-  padding: 0 10px;
   justify-content: space-around;
+  border: 1.5px solid ${COLOR.sixty};
 `;
 
 const NavButton = styled.div`
-  margin: 0 5px;
-  background: #61dafb;
-  border: 1px solid orange;
+  width: 50%;
+  padding: 0 2.5px;
+  color: ${props => (props.isSelected ? COLOR.sixtyLighter : COLOR.sixty)};
+  text-decoration: ${props => (props.isSelected ? "underline" : "none")};
+`;
+
+const Border = styled.div`
+  height: 150%;
+  width: 1.5px;
+  background: ${COLOR.sixty};
 `;
 
 const ListsDisplay = styled.div`
@@ -40,8 +47,7 @@ const Item = styled.div`
   width: 97%;
   border: 2px solid ${COLOR.sixtyLighter};
   transform: translateX(-1px);
-  background: ${props =>
-    props.isSelected ? COLOR.transparentShade : "transparent"};
+  background: ${props => (props.isSelected ? COLOR.sixtyDark : "transparent")};
   &:hover {
     background: ${COLOR.transparentShade};
   }
@@ -96,10 +102,17 @@ export default function SideBar({
   return (
     <SideBarContainer className="SIDEBAR" ref={sidebar} sidebarMB={sidebarMB}>
       <NavBar>
-        <NavButton onClick={() => setSidebarOption(PLAYLISTS)}>
+        <NavButton
+          onClick={() => setSidebarOption(PLAYLISTS)}
+          isSelected={showPlaylists}
+        >
           <p>playlists</p>
         </NavButton>
-        <NavButton onClick={() => setSidebarOption(MOODS)}>
+        <Border />
+        <NavButton
+          onClick={() => setSidebarOption(MOODS)}
+          isSelected={!showPlaylists}
+        >
           <p>moods</p>
         </NavButton>
       </NavBar>
