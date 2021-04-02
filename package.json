@@ -37,7 +37,8 @@
     "test": "jest --watchAll",
     "pretest": "jest --clearCache",
     "test:watch": "yarn test -- --watchAll",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "final-checks": "echo Remember to turn off the database mirroring feature"
   },
   "eslintConfig": {
     "extends": [

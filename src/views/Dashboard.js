@@ -16,11 +16,11 @@ const FixedBottom = styled.div`
   width: 100%;
 `;
 
-function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
+function Dashboard({ setPlayerHeight, playerHeight, headerHeight, warn }) {
   const [tokens, setTokens] = useState(
     JSON.parse(localStorage.getItem("tokens"))
   );
-
+  console.log({ warn });
   const [dbName, setDbName] = useState(localStorage.getItem("dbName") || null);
 
   const [expiryTime, setExpiryTime] = useState(
