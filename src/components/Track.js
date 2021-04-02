@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import styled from "styled-components";
-import { useSongSelection } from "../hooks/SongContext";
+import { useSong, useSongSelection } from "../hooks/SongContext";
 import { COLOR, devUrl, prodUrl } from "../services/variables";
 import Tags from "./Tags";
 import TagsSelection from "./TagsSelection";
@@ -25,9 +25,11 @@ const TrackFocus = styled.div`
   justify-content: flex-start;
   align-items: center;
   overflow: hidden;
-  background-color: transparent;
+  background-color: ${props =>
+    props.isSelected ? COLOR.translucentShade : "transparent"};
   &:hover {
-    background-color: ${COLOR.transparentShade};
+    background-color: ${props =>
+      props.isSelected ? COLOR.translucentShade : COLOR.transparentShade};
   }
 `;
 
@@ -67,7 +69,8 @@ const Song = styled.div`
   box-sizing: border-box;
   padding-top: 4px;
   &:hover {
-    background: rgb(101, 113, 85);
+    background: ${props =>
+      props.isSelected ? "rgb(167,173,157)" : "rgb(101, 113, 85)"};
     z-index: 1;
   }
 `;
@@ -87,6 +90,7 @@ export default function Track({
 }) {
   const [tags, setTags] = useState(trackTags ? trackTags : []);
   const setSong = useSongSelection();
+  const selectedSong = useSong();
 
   let { image, name, uri, artists } = track;
   artists = artists ? artists : [];
@@ -124,15 +128,19 @@ export default function Track({
     setTags(newTags);
   };
 
+  const handlePlay = uri => {
+    setSong(uri);
+  };
+
   const editTag = editIndex => {
     console.log("figure out a way to edit tags later");
   };
   return (
     <TrackContainer>
-      <TrackFocus>
+      <TrackFocus isSelected={uri === selectedSong}>
         <AlbumImage src={image} />
         <TrackInfo width={WIDTH}>
-          <Song>
+          <Song isSelected={uri === selectedSong}>
             <SongName width={WIDTH}>{name}</SongName>
           </Song>
           <Artists>
@@ -151,7 +159,7 @@ export default function Track({
         />
         <div
           style={{ marginLeft: "auto", marginRight: "10px" }}
-          onClick={() => setSong(uri)}
+          onClick={() => handlePlay(uri)}
         >
           <PlayButton />
         </div>
