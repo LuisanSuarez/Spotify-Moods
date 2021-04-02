@@ -5,7 +5,7 @@ import { Route, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import MusicPlayer from "../components/MusicPlayer";
 import { useTokenSelection } from "../hooks/TokenContext";
-import { devUrl, prodUrl } from "../services/variables";
+import { COLOR, devUrl, prodUrl } from "../services/variables";
 import GetMusic from "../views/GetMusic";
 import PlayMusic from "../views/PlayMusic";
 import SpotifyAuth from "./SpotifyAuth";
@@ -14,6 +14,10 @@ const FixedBottom = styled.div`
   position: fixed;
   bottom: 0;
   width: 100%;
+`;
+
+const DashboardDiv = styled.div`
+  background: ${COLOR.sixty};
 `;
 
 function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
@@ -144,7 +148,7 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
   }, []);
 
   return (
-    <div style={{ maxWidth: "100vw", height: "100%" }}>
+    <DashboardDiv style={{ maxWidth: "100vw", height: "100%" }}>
       <Route path="/dashboard/play">
         <PlayMusic
           tokens={tokens}
@@ -162,7 +166,7 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
       <FixedBottom ref={player}>
         <MusicPlayer token={tokens?.access_token} className="PLAYER" />
       </FixedBottom>
-    </div>
+    </DashboardDiv>
   );
 }
 

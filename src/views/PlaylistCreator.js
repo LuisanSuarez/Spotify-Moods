@@ -4,11 +4,33 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import TagsSelection from "../components/TagsSelection";
 import authService from "../services/authService";
-import { devUrl, prodUrl, spotifyUrl } from "../services/variables";
+import { COLOR, devUrl, prodUrl, spotifyUrl } from "../services/variables";
 
 const CreatorContainer = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const Controls = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`;
+
+const StartPlaylistDiv = styled.div`
+  color: ${COLOR.thirty};
+  box-sizing: border-box;
+  padding: 10px 20px;
+  border: 2px solid ${COLOR.thirty};
+  border-radius: 8px;
+  &:hover {
+    background: ${COLOR.transparentShade};
+  }
+`;
+
+const InclusiveExclusiveBtn = styled.div`
+  text-align: start;
+  padding: 10px 25px 25px;
 `;
 
 export default function PlaylistCreator({ tags }) {
@@ -65,7 +87,7 @@ export default function PlaylistCreator({ tags }) {
 
   return (
     <CreatorContainer>
-      <div style={{ display: "flex" }}>
+      <Controls>
         <TagsSelection
           options={tagLabels.filter(tag => !excludedTags.includes(tag))}
           type="createPlaylist"
@@ -78,9 +100,11 @@ export default function PlaylistCreator({ tags }) {
           label="but doesn't feel"
           submit={setExcluded}
         />
-        <div onClick={createPlaylist}> Show me how it feels</div>
-      </div>
-      <div>only with/also with button</div>
+        <StartPlaylistDiv onClick={createPlaylist}>
+          {"Show me how it feels"}
+        </StartPlaylistDiv>
+      </Controls>
+      <InclusiveExclusiveBtn>only with/also with button</InclusiveExclusiveBtn>
     </CreatorContainer>
   );
 }

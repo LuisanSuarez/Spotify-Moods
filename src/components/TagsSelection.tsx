@@ -70,12 +70,7 @@ const TagsSelection = ({ options, type, label, submit }: AppProps) => {
           filterSelectedOptions
           onChange={(e, value) => submit(value)}
           renderInput={params => (
-            <TextField
-              {...params}
-              variant="standard"
-              label={label}
-              placeholder="Favorites"
-            />
+            <TextField {...params} variant="standard" label={label} />
           )}
         />
       ) : (
