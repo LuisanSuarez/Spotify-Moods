@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 import "./App.css";
+import profileIcon from "./assets/img/icon/profile.png";
 import { SongProvider } from "./hooks/SongContext";
 import { TokenProvider } from "./hooks/TokenContext";
 import { devUrl, prodUrl } from "./services/variables";
@@ -15,7 +16,21 @@ const FixedHeader = styled.header`
   width: 100%;
   z-index: 1000;
   height: 10vh;
+  min-height: 65px;
   max-height: 100px;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 107px;
+  box-sizing: border-box;
+`;
+
+const HeaderEnd = styled.div`
+  margin-right: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 105px;
+  margin-bottom: -8px;
 `;
 
 function App() {
@@ -52,15 +67,26 @@ function App() {
         <TokenProvider>
           <BrowserRouter>
             <FixedHeader className="App-header" ref={header}>
-              <h1
-                className="App-link"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/dashboard/play"
+                style={{ textDecoration: "none", marginTop: -"2px" }}
               >
-                Moods
-              </h1>
-              <Link to="/dashboard/sync">Sync my Music</Link>
-              <Link to="/dashboard/play">Dashsboard</Link>
+                <h1
+                  className="App-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Moods
+                </h1>
+              </Link>
+              <HeaderEnd>
+                <Link style={{ textDecoration: "none" }} to="/dashboard/sync">
+                  Sync{" "}
+                </Link>
+                <Link to="#">
+                  <img src={profileIcon} className="profile-icon" />
+                </Link>
+              </HeaderEnd>
             </FixedHeader>
             <Switch>
               <Route exact path="/" component={Login} />

@@ -8,8 +8,8 @@ const variables = {
 
   COLOR: {
     sixty: "#053225",
-    sixtyDarker: "#04251C",
     sixtyDark: "#02120E",
+    sixtyDarker: "#04251C",
     sixtyLighter: "#60A592",
     sixtyLighter2: "#17C3B2",
     sixtyTranslucent: "rgba(34, 51, 11, 0.6)",

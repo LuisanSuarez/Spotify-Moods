@@ -15,7 +15,7 @@
 }
 
 .App-header {
-  background: url("./assets/img/smells-background.jpg");
+  background: url("./assets/img/smells-header-background.jpg");
   max-height: 10vh;
   min-width: 100vw;
   display: flex;
@@ -23,7 +23,12 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  background-size: 8%;
+  background-size: 1600px;
+}
+
+.profile-icon {
+  height: 25px;
+  width: 25px;
 }
 
 .App-link {
