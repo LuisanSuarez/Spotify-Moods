@@ -89,8 +89,13 @@ function App() {
               </HeaderEnd>
             </FixedHeader>
             <Switch>
-              <Route exact path="/" component={Login} />
-              <Route exact path="/login" component={Login} />
+              <Route exact path="/">
+                <Login headerHeight={headerHeight} />
+              </Route>
+              <Route exact path="/login">
+                <Login headerHeight={headerHeight} />
+              </Route>
+
               <Route path="/dashboard">
                 <Dashboard
                   setPlayerHeight={setPlayerHeight}

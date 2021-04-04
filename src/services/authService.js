@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { devUrl, prodUrl } = require("./variables");
+const { devUrl, prodUrl, spotifyUrl } = require("./variables");
 
 export default function authService() {
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
@@ -11,6 +11,11 @@ export default function authService() {
   const getTokens = async () =>
     await axios.get(url + "auth/tokens").then(res => res.data);
 
+  const getUser = async () => {
+    const userData = await axios.get(spotifyUrl, { headers: getHeaders() });
+    return userData.data;
+  };
+
   const getHeaders = () => {
     let headers = JSON.parse(localStorage.getItem("headers"));
     if (headers) return headers;
@@ -20,7 +25,7 @@ export default function authService() {
     return headers;
   };
 
-  return { setTokens, getTokens, getHeaders };
+  return { setTokens, getTokens, getUser, getHeaders };
 }
 
 // module.exports = authService();
