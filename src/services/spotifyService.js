@@ -17,10 +17,8 @@ export default function spotifyService() {
   };
 
   const fetch = async url => {
-    console.count("CORS error");
     let result;
     try {
-      console.count("CORS error");
       const headers = {
         authorization: "Bearer " + tokens.access_token,
       };
@@ -29,9 +27,7 @@ export default function spotifyService() {
       let response;
 
       do {
-        console.count("CORS error");
         response = await axios.get(url, { headers });
-        console.count("CORS error");
         playlists = [...playlists, ...response.data.items];
         url = response.data.next;
       } while (response.data.next);
