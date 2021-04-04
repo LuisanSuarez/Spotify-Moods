@@ -23,7 +23,10 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const selectedPlaylists = new Set();
 
   useEffect(async () => {
-    const fetchedPlaylists = await spotifyService().fetchPlaylists();
+    const fetchedPlaylists =
+      JSON.parse(localStorage.getItem("spotify_playlists")) ||
+      (await spotifyService().fetchPlaylists());
+
     if (!fetchedPlaylists.error) {
       const likedSongs = {
         name: "Liked Songs",
@@ -31,7 +34,12 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
         tracks: { href: spotifySavedTracks },
         images: [likedSongsImg],
       };
+
       setPlaylists([likedSongs, ...fetchedPlaylists.data]);
+      localStorage.setItem(
+        "spotify_playlists",
+        JSON.stringify(fetchedPlaylists)
+      );
     } else {
       alert(fetchedPlaylists.msg);
     }
