@@ -73,7 +73,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     });
   };
 
-  const handleClick = (playlistId, index) => {
+  const handlePlaylistClick = (playlistId, index) => {
     //toggle if we fetch playlist items or not
     const newPlaylists = [...playlists];
     if (selectedPlaylists.delete(playlistId)) {
@@ -95,7 +95,10 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
       <div style={{ overflowY: "scroll", height: "90vh" }}>
         {playlists[0] ? (
           playlists.map((playlist, index) => (
-            <div onClick={() => handleClick(playlist.id, index)}>
+            <div
+              key={playlist.id}
+              onClick={() => handlePlaylistClick(playlist.id, index)}
+            >
               <Playlist playlist={playlist} />
             </div>
           ))
