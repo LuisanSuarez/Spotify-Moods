@@ -20,7 +20,7 @@ const ContainerFlex = styled.div`
 
 export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [playlists, setPlaylists] = useState([]);
-  const selectedPlaylists = new Set();
+  const [selectedPlaylists, xyz] = useState(new Set());
 
   useEffect(async () => {
     const fetchedPlaylists =
@@ -73,6 +73,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   };
 
   const handlePlaylistClick = (playlistId, index) => {
+    console.log({ playlistId, index });
     const newPlaylists = [...playlists];
     if (selectedPlaylists.delete(playlistId)) {
       delete newPlaylists[index].selected;
@@ -80,6 +81,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
       selectedPlaylists.add(playlistId);
       newPlaylists[index].selected = true;
     }
+    console.log(newPlaylists[index]);
     setPlaylists(newPlaylists);
   };
 
