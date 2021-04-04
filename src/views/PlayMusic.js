@@ -49,7 +49,6 @@ export default function PlayMusic({
     setAllPlaylists(allPlaylists);
   }, []);
 
-  console.log({ displayPlaylist });
   return (
     <ContainerFlex
       sidebarWidth={sidebarWidth}

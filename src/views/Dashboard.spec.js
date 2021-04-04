@@ -17,3 +17,7 @@ test("sholud render Dashboard", () => {
     ])
   ).toBe(true);
 });
+
+test("should return null for dbName", () => {
+  const wrapper = shallow(<Dashboard />);
+});
