@@ -4,7 +4,7 @@ import likedSongsImg from "../assets/img/play-button.png";
 import playlistsService from "../services/playlistsService";
 import spotifyService from "../services/spotifyService";
 import tracksService from "../services/tracksService";
-import { devUrl, prodUrl, spotifySavedTracks } from "../services/variables";
+import { spotifySavedTracks } from "../services/variables";
 import Playlist from "./Playlist";
 import Loading from "./utilities/Loading";
 
@@ -20,16 +20,7 @@ const ContainerFlex = styled.div`
 
 export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [playlists, setPlaylists] = useState([]);
-  const [selectedPlaylists, xyz] = useState(new Set());
-
-  const [tokens, setTokens] = useState(
-    JSON.parse(localStorage.getItem("tokens"))
-  );
-
-  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
-
-  // const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists/";
-  // const savedTracks = "https://api.spotify.com/v1/me/tracks";
+  const selectedPlaylists = new Set();
 
   useEffect(async () => {
     const fetchedPlaylists = await spotifyService().fetchPlaylists();
@@ -74,7 +65,6 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   };
 
   const handlePlaylistClick = (playlistId, index) => {
-    //toggle if we fetch playlist items or not
     const newPlaylists = [...playlists];
     if (selectedPlaylists.delete(playlistId)) {
       delete newPlaylists[index].selected;
@@ -85,13 +75,34 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     setPlaylists(newPlaylists);
   };
 
+  const selectAll = () => {
+    const selected = true;
+    bulkSelectAction(selected);
+  };
+
+  const clearAll = () => {
+    const selected = false;
+    bulkSelectAction(selected);
+  };
+
+  const bulkSelectAction = selected => {
+    const newPlaylists = [...playlists];
+    newPlaylists.forEach(playlist => {
+      playlist.selected = selected;
+      selected
+        ? selectedPlaylists.add(playlist.id)
+        : selectedPlaylists.delete(playlist.id);
+    });
+    setPlaylists(newPlaylists);
+  };
+
   return (
     <ContainerFlex playerHeight={playerHeight} headerHeight={headerHeight}>
       <div onClick={() => loadPlaylists()}>
         <h2>Load Playlists</h2>
       </div>
-      <div onClick={() => console.log("SELECT ALL")}>Select All</div>
-      <div onClick={() => console.log("CLEAR ALL")}>Clear All</div>
+      <div onClick={selectAll}>Select All</div>
+      <div onClick={clearAll}>Clear All</div>
       <div style={{ overflowY: "scroll", height: "90vh" }}>
         {playlists[0] ? (
           playlists.map((playlist, index) => (
