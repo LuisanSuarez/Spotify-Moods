@@ -45,8 +45,11 @@ export default function PlayMusic({
   }, []);
 
   useEffect(async () => {
-    const allPlaylists = await playlistsService().getPlaylistsNames();
-    setAllPlaylists(allPlaylists);
+    const savedPlaylists =
+      JSON.parse(localStorage.getItem("saved_playlists")) ||
+      (await playlistsService().getPlaylistsNames());
+    localStorage.setItem("saved_playlists", JSON.stringify(savedPlaylists));
+    setAllPlaylists(savedPlaylists);
   }, []);
 
   return (

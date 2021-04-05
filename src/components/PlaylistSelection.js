@@ -20,7 +20,9 @@ const ContainerFlex = styled.div`
 
 export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [playlists, setPlaylists] = useState([]);
+  const [savedPlaylists, setSavedPlaylists] = useState([]);
   const [selectedPlaylists, xyz] = useState(new Set());
+  const [filterLoaded, setFilterLoaded] = useState(false);
 
   useEffect(async () => {
     const fetchedPlaylists =
@@ -43,6 +45,13 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     } else {
       alert(fetchedPlaylists.msg);
     }
+  }, []);
+
+  useEffect(() => {
+    const savedPlaylists =
+      JSON.parse(localStorage.getItem("saved_playlists")) ||
+      playlistsService().getPlaylistsNames();
+    setSavedPlaylists(savedPlaylists);
   }, []);
 
   const loadPlaylists = () => {
@@ -106,6 +115,8 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     setPlaylists(newPlaylists);
   };
 
+  const toggleShowLoaded = () => setFilterLoaded(!filterLoaded);
+
   return (
     <ContainerFlex playerHeight={playerHeight} headerHeight={headerHeight}>
       <div onClick={() => loadPlaylists()}>
@@ -113,6 +124,10 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
       </div>
       <div onClick={selectAll}>Select All</div>
       <div onClick={clearAll}>Clear All</div>
+      <div onClick={toggleShowLoaded}>
+        {filterLoaded ? "Show" : "Hide"} loaded playlists
+      </div>
+
       <div style={{ overflowY: "scroll", height: "90vh" }}>
         {playlists[0] ? (
           playlists.map((playlist, index) => (
