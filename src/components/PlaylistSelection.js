@@ -21,6 +21,7 @@ const ContainerFlex = styled.div`
 export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [playlists, setPlaylists] = useState([]);
   const [savedPlaylists, setSavedPlaylists] = useState([]);
+  const [filteredPlaylists, setFilteredPlaylists] = useState([]);
   const [selectedPlaylists, xyz] = useState(new Set());
   const [filterLoaded, setFilterLoaded] = useState(false);
 
@@ -54,6 +55,17 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     setSavedPlaylists(savedPlaylists);
   }, []);
 
+  useEffect(() => {
+    const savedPlaylistsIds = new Set(
+      savedPlaylists.map(playlist => playlist.id)
+    );
+
+    const filteredPlaylists = playlists.filter(
+      playlist => !savedPlaylistsIds.delete(playlist.id)
+    );
+    setFilteredPlaylists(filteredPlaylists);
+  }, [savedPlaylists]);
+
   const loadPlaylists = () => {
     const playlistsCopy = [...playlists];
     const playlistsToFetch = playlistsCopy.filter(playlist =>
@@ -82,7 +94,6 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   };
 
   const handlePlaylistClick = (playlistId, index) => {
-    console.log({ playlistId, index });
     const newPlaylists = [...playlists];
     if (selectedPlaylists.delete(playlistId)) {
       delete newPlaylists[index].selected;
@@ -90,7 +101,6 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
       selectedPlaylists.add(playlistId);
       newPlaylists[index].selected = true;
     }
-    console.log(newPlaylists[index]);
     setPlaylists(newPlaylists);
   };
 
@@ -129,8 +139,21 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
       </div>
 
       <div style={{ overflowY: "scroll", height: "90vh" }}>
-        {playlists[0] ? (
-          playlists.map((playlist, index) => (
+        {!filterLoaded ? (
+          playlists[0] ? (
+            playlists.map((playlist, index) => (
+              <div
+                key={playlist.id}
+                onClick={() => handlePlaylistClick(playlist.id, index)}
+              >
+                <Playlist playlist={playlist} />
+              </div>
+            ))
+          ) : (
+            <Loading />
+          )
+        ) : filteredPlaylists[0] ? (
+          filteredPlaylists.map((playlist, index) => (
             <div
               key={playlist.id}
               onClick={() => handlePlaylistClick(playlist.id, index)}
