@@ -66,18 +66,24 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     setFilteredPlaylists(filteredPlaylists);
   }, [savedPlaylists]);
 
-  const loadPlaylists = () => {
+  const loadPlaylists = async () => {
     const playlistsCopy = [...playlists];
     const playlistsToFetch = playlistsCopy.filter(playlist =>
       selectedPlaylists.delete(playlist.id)
     );
-    const failures = [];
 
+    clearAll();
+
+    const failures = [];
+    const successes = [];
     // with forEach and async, we'll finish before all fetch calls are done.
     // failures array will still be empty, no matter what happens
     // if we want it to wait, either use a for loop or check this out
     // https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
-    playlistsToFetch.forEach(async playlist => {
+    // update: we've since changed it to a for loop. want to keep this link
+    // around for a little longer though.
+    for (let i = 0; i < playlistsToFetch.length; i++) {
+      let playlist = playlistsToFetch[i];
       const result = await spotifyService().fetchTracks(playlist.tracks.href);
       if (!result.error) {
         const tracks = tracksService().sanitizeTracksArray(result.data);
@@ -87,9 +93,29 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
           tracks
         );
         playlistsService().addPlaylistToAllPlaylists(playlist);
+        successes.push(playlist);
       } else {
         failures.push(playlist);
       }
+    }
+
+    const updatedSavedPlaylists = [
+      ...savedPlaylists,
+      ...preparePlaylistForCache(successes),
+    ];
+
+    setSavedPlaylists(updatedSavedPlaylists);
+    localStorage.setItem(
+      "saved_playlists",
+      JSON.stringify(updatedSavedPlaylists)
+    );
+  };
+
+  const preparePlaylistForCache = playlistArray => {
+    const arrayCopy = [...playlistArray];
+    return arrayCopy.map(playlist => {
+      const { name, id } = playlist;
+      return { _id: id, id, name };
     });
   };
 
