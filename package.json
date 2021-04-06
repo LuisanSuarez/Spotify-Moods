@@ -19,6 +19,7 @@
     "cookieparser": "^0.1.0",
     "cors": "^2.8.5",
     "lodash": "^4.17.20",
+    "node-sass": "4.14.1",
     "querystring": "^0.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
