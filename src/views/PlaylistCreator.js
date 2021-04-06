@@ -1,8 +1,9 @@
 import axios from "axios";
 import { shuffle } from "lodash";
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import TagsSelection from "../components/TagsSelection";
+import Switch from "../components/utilities/Switch";
 import authService from "../services/authService";
 import { COLOR, devUrl, prodUrl, spotifyUrl } from "../services/variables";
 
@@ -29,13 +30,43 @@ const StartPlaylistDiv = styled.div`
 `;
 
 const InclusiveExclusiveBtn = styled.div`
+  display: flex;
+  justify-content: flex-start;
   text-align: start;
   padding: 10px 25px 25px;
 `;
 
+const ExclusiveText = styled.p`
+  background: ${props =>
+    props.onlyWithTags ? COLOR.transparentShade : "transparent"};
+  transition: background 0.3s ease-out;
+  border-radius: 8px;
+  box-sizing: border-box;
+  padding: 2px 8px 4px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+`;
+
+const InclusiveText = styled.p`
+  background: ${props =>
+    props.onlyWithTags ? "transparent" : COLOR.transparentShade};
+  transition: background 0.3s ease-out;
+  border-radius: 8px;
+  box-sizing: border-box;
+  padding: 2px 8px 4px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+`;
+
+const EXCLUSIVE = "Only with these tags";
+const INCLUSIVE = "Any of these tags";
+
 export default function PlaylistCreator({ tags }) {
   const [includedTags, setIncludedTags] = useState([]);
   const [excludedTags, setExcludedTags] = useState([]);
+  const [onlyWithTags, setOnlyWithTags] = useState(true);
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
@@ -85,6 +116,10 @@ export default function PlaylistCreator({ tags }) {
     setExcludedTags(tags);
   };
 
+  const handleSwitch = () => {
+    setOnlyWithTags(!onlyWithTags);
+  };
+
   return (
     <CreatorContainer>
       <Controls>
@@ -104,7 +139,11 @@ export default function PlaylistCreator({ tags }) {
           {"Show me how it feels"}
         </StartPlaylistDiv>
       </Controls>
-      <InclusiveExclusiveBtn>only with/also with button</InclusiveExclusiveBtn>
+      <InclusiveExclusiveBtn onClick={handleSwitch}>
+        <InclusiveText onlyWithTags={onlyWithTags}>{INCLUSIVE}</InclusiveText>
+        <Switch label="" />
+        <ExclusiveText onlyWithTags={onlyWithTags}>{EXCLUSIVE}</ExclusiveText>
+      </InclusiveExclusiveBtn>
     </CreatorContainer>
   );
 }
