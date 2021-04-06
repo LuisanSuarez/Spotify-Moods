@@ -26,10 +26,7 @@ export default function PlayMusic({
   headerHeight,
   playerHeight,
 }) {
-  const [displayPlaylist, setDisplayPlaylist] = useState({
-    name: "Dev Playlist",
-    id: "3y1Jndo8RSD7sOtDAXnJO0",
-  });
+  const [displayPlaylist, setDisplayPlaylist] = useState({});
   const [allTags, setAllTags] = useState([]);
 
   const [allPlaylists, setAllPlaylists] = useState([]);
@@ -50,6 +47,7 @@ export default function PlayMusic({
       (await playlistsService().getPlaylistsNames());
     localStorage.setItem("saved_playlists", JSON.stringify(savedPlaylists));
     setAllPlaylists(savedPlaylists);
+    setDisplayPlaylist(savedPlaylists[0]);
   }, []);
 
   return (
