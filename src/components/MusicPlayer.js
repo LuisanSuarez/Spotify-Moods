@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "react-spotify-web-playback";
 import styled from "styled-components";
+import Loading from "../components/utilities/Loading";
 import { useSong } from "../hooks/SongContext";
 import { devUrl, prodUrl } from "../services/variables";
 import "./musicPlayer.css";
@@ -67,6 +68,7 @@ function MusicPlayer({ token }) {
     tags = Array.isArray(tags.data) ? tags.data : [];
     return tags;
   };
+
   return token ? (
     <>
       {" "}
@@ -94,7 +96,7 @@ function MusicPlayer({ token }) {
       </div>
     </>
   ) : (
-    ""
+    <Loading />
   );
 }
 

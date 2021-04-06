@@ -5,7 +5,6 @@ import "./App.css";
 import profileIcon from "./assets/img/icon/profile.png";
 import { SongProvider } from "./hooks/SongContext";
 import { TokenProvider } from "./hooks/TokenContext";
-import { devUrl, prodUrl } from "./services/variables";
 import Dashboard from "./views/Dashboard";
 import GetMusic from "./views/GetMusic";
 import Login from "./views/Login";
@@ -36,10 +35,11 @@ const HeaderEnd = styled.div`
 function App() {
   const [playerHeight, setPlayerHeight] = useState("52px");
   const [headerHeight, setHeaderHeight] = useState("62px");
+  const [isMainView, setIsMainView] = useState(
+    window.location.pathname.split("/").pop() === "play"
+  );
 
   const header = useRef(null);
-
-  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(entries =>
@@ -61,6 +61,11 @@ function App() {
     }
   };
 
+  const handleNav = () => {
+    const isMainView = window.location.pathname.split("/").pop() === "play";
+    setIsMainView(isMainView);
+  };
+
   return (
     <div className="App">
       <SongProvider>
@@ -69,7 +74,7 @@ function App() {
             <FixedHeader className="App-header" ref={header}>
               <Link
                 to="/dashboard/play"
-                style={{ textDecoration: "none", marginTop: -"2px" }}
+                style={{ textDecoration: "none", marginTop: "-2px" }}
               >
                 <h1
                   className="App-link"
@@ -80,9 +85,23 @@ function App() {
                 </h1>
               </Link>
               <HeaderEnd>
-                <Link style={{ textDecoration: "none" }} to="/dashboard/sync">
-                  Sync{" "}
-                </Link>
+                <div onClick={handleNav}>
+                  {isMainView ? (
+                    <Link
+                      style={{ textDecoration: "none" }}
+                      to="/dashboard/sync"
+                    >
+                      Sync{" "}
+                    </Link>
+                  ) : (
+                    <Link
+                      style={{ textDecoration: "none" }}
+                      to="/dashboard/play"
+                    >
+                      Play{" "}
+                    </Link>
+                  )}
+                </div>
                 <Link to="#">
                   <img src={profileIcon} className="profile-icon" />
                 </Link>
