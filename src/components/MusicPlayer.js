@@ -17,10 +17,12 @@ function MusicPlayer({ token }) {
   const [selectedSong, setSelectedSong] = useState(song);
   const [wait, setWait] = useState(true);
   const [tags, setTags] = useState([]);
+  const [deviceId, setDeviceId] = useState("");
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const callback = state => {
+    if (state.deviceId) sessionStorage.setItem("deviceId", state.deviceId);
     setStatefulness(artistsAsArray(state));
   };
 
@@ -43,6 +45,7 @@ function MusicPlayer({ token }) {
   };
 
   useEffect(async () => {
+    // if (Array.isArray(song)) song = song[0];
     if (song) {
       const songTags = await getTags(song);
       setTags(songTags);
@@ -72,7 +75,7 @@ function MusicPlayer({ token }) {
   return token ? (
     <>
       {" "}
-      {song ? (
+      {state.track?.id ? (
         <TrackContainer>
           <Track
             key={state.track?.id}

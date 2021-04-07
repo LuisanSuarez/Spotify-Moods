@@ -4,7 +4,9 @@ import { useState } from "react";
 import styled from "styled-components";
 import TagsSelection from "../components/TagsSelection";
 import Switch from "../components/utilities/Switch";
+import { useSongSelection } from "../hooks/SongContext";
 import authService from "../services/authService";
+import tracksService from "../services/tracksService";
 import { COLOR, devUrl, prodUrl, spotifyUrl } from "../services/variables";
 
 const CreatorContainer = styled.div`
@@ -60,7 +62,7 @@ const InclusiveText = styled.p`
   align-items: center;
 `;
 
-const EXCLUSIVE = "Only with these tags";
+const EXCLUSIVE = "All of these tags";
 const INCLUSIVE = "Any of these tags";
 
 export default function PlaylistCreator({ tags }) {
@@ -69,6 +71,8 @@ export default function PlaylistCreator({ tags }) {
   const [onlyWithTags, setOnlyWithTags] = useState(true);
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
+
+  const setSong = useSongSelection();
 
   const tagLabels = tags.map(tag => tag.tag);
 
@@ -90,20 +94,38 @@ export default function PlaylistCreator({ tags }) {
 
     excludedSongs.forEach(song => includedSongs.delete(song));
     let songs = [...includedSongs];
+    songs = await filterExclusive(songs, onlyWithTags);
     songs = shuffle(songs);
-    songs = songs.map(uri => "spotify:track:" + uri);
+    songs = songs.map(uri => "spotify:track:" + uri.id);
 
-    const uris = { uris: songs };
-    axios.put(spotifyUrl + "player/play", uris, { headers }).catch(err => {
-      console.error({ err });
-    });
+    startPlaylist(songs);
   };
+  const startPlaylist = list => {
+    const deviceId = sessionStorage.getItem("deviceId");
+    const uris = { uris: list };
+    const params = { device_id: deviceId };
 
+    axios
+      .put(spotifyUrl + "player/play", uris, { headers, params })
+      .catch(err => {
+        if (err.response.status === "404") console.error({ err });
+      });
+  };
+  const filterExclusive = async (songs, shouldFilter) => {
+    const tracksWithTags = await tracksService().getTracksBulk(songs);
+    if (!shouldFilter) return tracksWithTags;
+    const hasAllTags = song => {
+      const response = includedTags.every(tag => song.tags.includes(tag));
+      return response;
+    };
+
+    const filteredTracks = tracksWithTags.filter(hasAllTags);
+    return filteredTracks;
+  };
   const getTracksFromTag = async tag => {
     const tracks = await axios.get(url + "api/getTracksFromTag", {
       params: { tag: tag },
     });
-
     if (tracks.data[0]) return tracks.data;
     return [];
   };
