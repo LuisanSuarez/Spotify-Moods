@@ -3,6 +3,7 @@ import { shuffle } from "lodash";
 import { useState } from "react";
 import styled from "styled-components";
 import TagsSelection from "../components/TagsSelection";
+import Loading from "../components/utilities/Loading";
 import Switch from "../components/utilities/Switch";
 import { useSongSelection } from "../hooks/SongContext";
 import authService from "../services/authService";
@@ -69,6 +70,7 @@ export default function PlaylistCreator({ tags }) {
   const [includedTags, setIncludedTags] = useState([]);
   const [excludedTags, setExcludedTags] = useState([]);
   const [onlyWithTags, setOnlyWithTags] = useState(true);
+  const [creatingPlaylist, setCreatingPlaylist] = useState(false);
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
@@ -79,6 +81,8 @@ export default function PlaylistCreator({ tags }) {
   let headers = authService().getHeaders();
 
   const createPlaylist = async () => {
+    if (creatingPlaylist) return;
+    setCreatingPlaylist(true);
     const includedSongs = new Set();
     const excludedSongs = new Set();
 
@@ -109,6 +113,9 @@ export default function PlaylistCreator({ tags }) {
       .put(spotifyUrl + "player/play", uris, { headers, params })
       .catch(err => {
         if (err.response.status === "404") console.error({ err });
+      })
+      .finally(() => {
+        setCreatingPlaylist(false);
       });
   };
   const filterExclusive = async (songs, shouldFilter) => {
@@ -158,7 +165,7 @@ export default function PlaylistCreator({ tags }) {
           submit={setExcluded}
         />
         <StartPlaylistDiv onClick={createPlaylist}>
-          {"Show me how it feels"}
+          {creatingPlaylist ? <Loading /> : "Show me how it feels"}
         </StartPlaylistDiv>
       </Controls>
       <InclusiveExclusiveBtn onClick={handleSwitch}>
