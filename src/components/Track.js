@@ -104,8 +104,6 @@ export default function Track({
   const setSong = useSongSelection();
   const selectedSong = useSong();
 
-  console.log({ trackTags });
-
   let { image, name, uri, artists } = track;
   artists = artists ? artists : [];
 
