@@ -3,11 +3,16 @@ import VirtualizedList from "./utilities/VirtualizedList";
 
 const TagsContainer = styled.div`
   display: flex;
+  min-width: 200px;
+  max-width: 300px;
+  width: 20vw;
 `;
 
 const NoTagsContaienr = styled.div`
   display: flex;
-  width: 200px;
+  min-width: 200px;
+  max-width: 300px;
+  width: 20vw;
 `;
 
 const NoTagsText = styled.p`

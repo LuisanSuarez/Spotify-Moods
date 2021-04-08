@@ -12,7 +12,7 @@ const PlayContainer = styled.div`
 export default function PlayButton() {
   return (
     <PlayContainer>
-      <img src={playButton} style={{ height: "100%", width: "100%" }} />
+      <img src={playButton} style={{ height: "85%", width: "85%" }} />
     </PlayContainer>
   );
 }

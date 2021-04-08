@@ -4,14 +4,17 @@ import PropTypes from "prop-types";
 import React from "react";
 import { FixedSizeList } from "react-window";
 import Tag from "../Tag";
+
 const HEIGHT = 60;
-const WIDTH = 200;
+const WIDTH = "26vw";
+const MAX_WIDTH = "102%";
 const ITEM_SIZE = 28;
+
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
     height: HEIGHT,
-    maxWidth: WIDTH,
+    // maxWidth: WIDTH,
     backgroundColor: "transparent",
   },
 }));
@@ -45,10 +48,9 @@ export default function VirtualizedList({ items, deleteTag, editTag }) {
   });
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root + " hola virtualized-list-override"}>
       <FixedSizeList
         height={HEIGHT}
-        width={WIDTH}
         itemSize={ITEM_SIZE}
         itemCount={items.length}
         itemData={functionItems}

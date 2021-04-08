@@ -11,7 +11,7 @@ const TracksContainer = styled.div`
   width: 84vw;
   border: 1px solid blue;
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-start;
   flex-wrap: wrap;
   margin: 0 auto;
   overflow-y: scroll;
@@ -54,7 +54,7 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
     <>
       {displayPlaylist && !loading ? (
         <TracksContainer>
-          <h2>{playlistName}</h2>
+          <h2 style={{ width: "100%" }}>{playlistName}</h2>
           {tracks[0] ? (
             tracks.map((track, index) => (
               <Track

@@ -21,8 +21,15 @@ function MusicPlayer({ token }) {
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
-  const callback = state => {
+  const callback = async state => {
     if (state.deviceId) sessionStorage.setItem("deviceId", state.deviceId);
+    console.log({ state });
+    if (state.nextTracks.length || state.previousTracks.length) {
+      console.log("runs");
+      const songTags = await getTags(state.track.uri);
+      setTags(songTags);
+      console.log({ songTags });
+    }
     setStatefulness(artistsAsArray(state));
   };
 
@@ -47,13 +54,16 @@ function MusicPlayer({ token }) {
   useEffect(async () => {
     // if (Array.isArray(song)) song = song[0];
     if (song) {
+      console.log({ song });
       const songTags = await getTags(song);
       setTags(songTags);
     }
     setSelectedSong(song);
   }, [song]);
 
-  useEffect(() => {}, [tags]);
+  useEffect(() => {
+    console.log({ tags });
+  }, [tags]);
 
   useEffect(() => {
     setWait(!wait);

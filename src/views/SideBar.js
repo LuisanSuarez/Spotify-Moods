@@ -7,6 +7,9 @@ const SideBarContainer = styled.div`
   flex-direction: column;
   width: 16vw;
   max-width: 140px;
+  @media (min-width: 960px) {
+    max-width: 200px;
+  }
   height: 100%;
   left: 0;
   margin-bottom: ${props => props.sidebarMB};

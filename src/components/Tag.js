@@ -7,7 +7,7 @@ const TagContainer = styled.div`
 `;
 
 const TagTitle = styled.p`
-  margin: 0 0 0 7px;
+  margin: 0;
 `;
 
 const DeleteTag = styled.div`

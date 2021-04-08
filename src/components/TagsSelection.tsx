@@ -7,7 +7,9 @@ import Autocomplete, {
 import React from "react";
 import { COLOR } from "../services/variables";
 
-const WIDTH = 160;
+const MIN_WIDTH = 160;
+const MAX_WIDTH = 220;
+const WIDTH = "20vw";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,11 +22,16 @@ const useStyles = makeStyles(theme => ({
         color: COLOR.thirty,
       },
     },
+    minWidth: MIN_WIDTH,
+    maxWidth: MAX_WIDTH,
     width: WIDTH,
-    margin: "0 10px",
+    margin: "0 6px",
     "& > * + *": {
       marginTop: theme.spacing(3),
       marginRight: theme.spacing(3),
+    },
+    [theme.breakpoints.up("md")]: {
+      margin: "0 26px",
     },
   },
 }));

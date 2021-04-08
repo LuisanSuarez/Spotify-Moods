@@ -7,10 +7,11 @@ import Tags from "./Tags";
 import TagsSelection from "./TagsSelection";
 import PlayButton from "./utilities/PlayButton";
 
-const WIDTH = "175px";
+const WIDTH = "125px";
 
 const TrackContainer = styled.div`
   width: 100%;
+  max-width: 1864px;
   margin: 2px 0;
   height: 60px;
   color: #61dafb;
@@ -41,7 +42,9 @@ const AlbumImage = styled.img`
 
 const TrackInfo = styled.div`
   height: 100%;
-  width: ${props => props.width};
+  min-width: 125px;
+  max-width: 400px;
+  width: 22vw;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -52,20 +55,16 @@ const TrackInfo = styled.div`
 
 const SongName = styled.p`
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: bold;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: ${props => props.width};
   text-align: start;
-  &:hover {
-    width: auto;
-    z-index: 1;
-  }
 `;
 const Song = styled.div`
   height: 60%;
+  width: 100%;
   box-sizing: border-box;
   padding-top: 4px;
   &:hover {
@@ -77,10 +76,23 @@ const Song = styled.div`
 const Artists = styled.div`
   height: 35%;
   align-items: baseline;
+  width: 100%;
 `;
 const ArtistName = styled.p`
   margin: 0;
   margin-top: -4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: start;
+`;
+
+const PlayButtonContainer = styled.div`
+  margin-left: 7px;
+  margin-right: 10px;
+  @media (min-width: 960px) {
+    margin-left: 2vw;
+  }
 `;
 
 export default function Track({
@@ -91,6 +103,8 @@ export default function Track({
   const [tags, setTags] = useState(trackTags ? trackTags : []);
   const setSong = useSongSelection();
   const selectedSong = useSong();
+
+  console.log({ trackTags });
 
   let { image, name, uri, artists } = track;
   artists = artists ? artists : [];
@@ -144,9 +158,12 @@ export default function Track({
             <SongName width={WIDTH}>{name}</SongName>
           </Song>
           <Artists>
-            {artists.map(artist => (
-              <ArtistName>{artist.name}</ArtistName>
-            ))}
+            <ArtistName>
+              {artists
+                .map(artist => artist.name)
+                .join(", ")
+                .trim()}
+            </ArtistName>
           </Artists>
         </TrackInfo>
         <Tags tags={tags} deleteTag={deleteTag} editTag={editTag} />
@@ -157,12 +174,9 @@ export default function Track({
           label="add new tag"
           submit={handleNewTag}
         />
-        <div
-          style={{ marginLeft: "auto", marginRight: "10px" }}
-          onClick={() => handlePlay(uri)}
-        >
+        <PlayButtonContainer onClick={() => handlePlay(uri)}>
           <PlayButton />
-        </div>
+        </PlayButtonContainer>
       </TrackFocus>
     </TrackContainer>
   );

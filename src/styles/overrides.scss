@@ -6,3 +6,9 @@
     margin-right: unset;
   }
 }
+
+.virtualized-list-override {
+  .MuiListItem-gutters {
+    padding-left: 8px;
+  }
+}
