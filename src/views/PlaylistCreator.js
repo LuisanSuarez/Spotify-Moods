@@ -168,9 +168,11 @@ export default function PlaylistCreator({ tags }) {
           {creatingPlaylist ? <Loading /> : "Show me how it feels"}
         </StartPlaylistDiv>
       </Controls>
-      <InclusiveExclusiveBtn onClick={handleSwitch}>
+      <InclusiveExclusiveBtn>
         <InclusiveText onlyWithTags={onlyWithTags}>{INCLUSIVE}</InclusiveText>
-        <Switch label="" />
+        <div onClick={handleSwitch}>
+          <Switch label="" />
+        </div>
         <ExclusiveText onlyWithTags={onlyWithTags}>{EXCLUSIVE}</ExclusiveText>
       </InclusiveExclusiveBtn>
     </CreatorContainer>
