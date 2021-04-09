@@ -4,6 +4,7 @@ import styled from "styled-components";
 import "./App.css";
 import profileIcon from "./assets/img/icon/profile.png";
 import { SongProvider } from "./hooks/SongContext";
+import { TagsProvider } from "./hooks/TagsContext";
 import { TokenProvider } from "./hooks/TokenContext";
 import Dashboard from "./views/Dashboard";
 import GetMusic from "./views/GetMusic";
@@ -68,63 +69,66 @@ function App() {
 
   return (
     <div className="App">
+      p
       <SongProvider>
         <TokenProvider>
-          <BrowserRouter>
-            <FixedHeader className="App-header" ref={header}>
-              <Link
-                to="/dashboard/play"
-                style={{ textDecoration: "none", marginTop: "-2px" }}
-              >
-                <h1
-                  className="App-link"
-                  target="_blank"
-                  rel="noopener noreferrer"
+          <TagsProvider>
+            <BrowserRouter>
+              <FixedHeader className="App-header" ref={header}>
+                <Link
+                  to="/dashboard/play"
+                  style={{ textDecoration: "none", marginTop: "-2px" }}
                 >
-                  Moods
-                </h1>
-              </Link>
-              <HeaderEnd>
-                <div onClick={handleNav}>
-                  {isMainView ? (
-                    <Link
-                      style={{ textDecoration: "none" }}
-                      to="/dashboard/sync"
-                    >
-                      Sync{" "}
-                    </Link>
-                  ) : (
-                    <Link
-                      style={{ textDecoration: "none" }}
-                      to="/dashboard/play"
-                    >
-                      Play{" "}
-                    </Link>
-                  )}
-                </div>
-                <Link to="#">
-                  <img src={profileIcon} className="profile-icon" />
+                  <h1
+                    className="App-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Moods
+                  </h1>
                 </Link>
-              </HeaderEnd>
-            </FixedHeader>
-            <Switch>
-              <Route exact path="/">
-                <Login headerHeight={headerHeight} />
-              </Route>
-              <Route exact path="/login">
-                <Login headerHeight={headerHeight} />
-              </Route>
+                <HeaderEnd>
+                  <div onClick={handleNav}>
+                    {isMainView ? (
+                      <Link
+                        style={{ textDecoration: "none" }}
+                        to="/dashboard/sync"
+                      >
+                        Sync{" "}
+                      </Link>
+                    ) : (
+                      <Link
+                        style={{ textDecoration: "none" }}
+                        to="/dashboard/play"
+                      >
+                        Play{" "}
+                      </Link>
+                    )}
+                  </div>
+                  <Link to="#">
+                    <img src={profileIcon} className="profile-icon" />
+                  </Link>
+                </HeaderEnd>
+              </FixedHeader>
+              <Switch>
+                <Route exact path="/">
+                  <Login headerHeight={headerHeight} />
+                </Route>
+                <Route exact path="/login">
+                  <Login headerHeight={headerHeight} />
+                </Route>
 
-              <Route path="/dashboard">
-                <Dashboard
-                  setPlayerHeight={setPlayerHeight}
-                  playerHeight={playerHeight}
-                  headerHeight={headerHeight}
-                />
-              </Route>
-              <Route path="dashboard/sync" component={GetMusic} />
-            </Switch>
-          </BrowserRouter>
+                <Route path="/dashboard">
+                  <Dashboard
+                    setPlayerHeight={setPlayerHeight}
+                    playerHeight={playerHeight}
+                    headerHeight={headerHeight}
+                  />
+                </Route>
+                <Route path="dashboard/sync" component={GetMusic} />
+              </Switch>
+            </BrowserRouter>
+          </TagsProvider>
         </TokenProvider>
       </SongProvider>
     </div>

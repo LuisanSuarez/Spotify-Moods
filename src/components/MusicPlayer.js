@@ -4,6 +4,7 @@ import SpotifyPlayer from "react-spotify-web-playback";
 import styled from "styled-components";
 import Loading from "../components/utilities/Loading";
 import { useSong } from "../hooks/SongContext";
+import { useTags } from "../hooks/TagsContext";
 import { devUrl, prodUrl } from "../services/variables";
 import "./musicPlayer.css";
 import Track from "./Track";
@@ -12,12 +13,12 @@ const TrackContainer = styled.div``;
 
 function MusicPlayer({ token }) {
   let song = useSong();
+  const dashboardTags = useTags();
   const player = useRef();
   const [state, setStatefulness] = useState({});
   const [selectedSong, setSelectedSong] = useState(song);
   const [wait, setWait] = useState(true);
   const [tags, setTags] = useState([]);
-  const [deviceId, setDeviceId] = useState("");
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
@@ -69,6 +70,10 @@ function MusicPlayer({ token }) {
       player.current.togglePlay();
     }
   }, [wait]);
+
+  useEffect(() => {
+    setTags(dashboardTags.tags);
+  }, [dashboardTags]);
 
   const getTags = async uri => {
     let tags = await axios.get(url + "api/getSongTags", { params: { uri } });

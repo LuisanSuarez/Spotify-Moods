@@ -1,7 +1,8 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSong, useSongSelection } from "../hooks/SongContext";
+import { useTags, useTagsUpdating } from "../hooks/TagsContext";
 import { COLOR, devUrl, prodUrl } from "../services/variables";
 import Tags from "./Tags";
 import TagsSelection from "./TagsSelection";
@@ -103,6 +104,8 @@ export default function Track({
   const [tags, setTags] = useState(trackTags ? trackTags : []);
   const setSong = useSongSelection();
   const selectedSong = useSong();
+  const setContextTags = useTagsUpdating();
+  const contextTags = useTags();
 
   let { image, name, uri, artists } = track;
   artists = artists ? artists : [];
@@ -140,13 +143,27 @@ export default function Track({
     setTags(newTags);
   };
 
+  useEffect(() => {
+    if (contextTags.uri === uri) {
+      setContextTags({ tags, uri });
+    }
+  }, [tags]);
+
+  useEffect(() => {
+    if (contextTags.uri === uri && contextTags.tags.length !== tags.length) {
+      setTags(contextTags.tags);
+    }
+  }, [contextTags]);
+
   const handlePlay = uri => {
+    setContextTags({ tags, uri });
     setSong(uri);
   };
 
   const editTag = editIndex => {
-    console.log("figure out a way to edit tags later");
+    // console.log("figure out a way to edit tags later");
   };
+
   return (
     <TrackContainer>
       <TrackFocus isSelected={uri === selectedSong}>
