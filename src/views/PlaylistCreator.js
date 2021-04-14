@@ -95,15 +95,21 @@ export default function PlaylistCreator({ tags }) {
       const tracks = await getTracksFromTag(excludedTags[i]);
       tracks.forEach(track => excludedSongs.add(track));
     }
-
-    excludedSongs.forEach(song => includedSongs.delete(song));
+    excludedSongs.forEach(song => {
+      includedSongs.delete(song);
+    });
     let songs = [...includedSongs];
+    let exclude = [];
+    excludedSongs.forEach(song => exclude.push(song.id));
+    songs = songs.filter(song => !exclude.includes(song.id));
+
     songs = await filterExclusive(songs, onlyWithTags);
     songs = shuffle(songs);
     songs = songs.map(uri => "spotify:track:" + uri.id);
-
+    // WHAT TO DO IF IS EMPTY
     startPlaylist(songs);
   };
+
   const startPlaylist = list => {
     const deviceId = sessionStorage.getItem("deviceId");
     const uris = { uris: list };
@@ -118,6 +124,7 @@ export default function PlaylistCreator({ tags }) {
         setCreatingPlaylist(false);
       });
   };
+
   const filterExclusive = async (songs, shouldFilter) => {
     const tracksWithTags = await tracksService().getTracksBulk(songs);
     if (!shouldFilter) return tracksWithTags;
