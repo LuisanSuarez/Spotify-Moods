@@ -31,6 +31,7 @@ function MusicPlayer({ token }) {
       setTags(songTags);
     }
     const { uri } = state.track;
+    console.log({ state, uri, tags });
     setContextTags({ tags, uri });
     setSong(uri);
     setStatefulness(artistsAsArray(state));
@@ -57,6 +58,7 @@ function MusicPlayer({ token }) {
   useEffect(async () => {
     // if (Array.isArray(song)) song = song[0];
     const isPlaylist = state.nextTracks?.length || state.previousTracks?.length;
+    console.log({ isPlaylist });
     if (isPlaylist) return;
     if (song) {
       const songTags = await getTags(song);

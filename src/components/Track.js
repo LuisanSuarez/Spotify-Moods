@@ -144,12 +144,14 @@ export default function Track({
   };
 
   useEffect(() => {
+    console.log("tags change:", { contextTags, tags, uri });
     if (contextTags.uri === uri) {
       setContextTags({ tags, uri });
     }
   }, [tags]);
 
   useEffect(() => {
+    console.log("contextTags change:", { contextTags, tags, uri });
     if (contextTags.uri === uri && contextTags.tags.length !== tags.length) {
       setTags(contextTags.tags);
     }
@@ -158,6 +160,7 @@ export default function Track({
   const handlePlay = uri => {
     setContextTags({ tags, uri });
     setSong(uri);
+    console.log("track, setSong:", { tags, uri });
   };
 
   const editTag = editIndex => {
