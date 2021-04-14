@@ -45,6 +45,7 @@ function App() {
   const header = useRef(null);
 
   useEffect(() => {
+    console.log("split path");
     setAtLogin(splitPath.includes("login") || !splitPath[splitPath.length - 1]);
     setAtDashboard(splitPath.includes("play"));
   }, [splitPath]);
@@ -81,18 +82,20 @@ function App() {
           <TagsProvider>
             <BrowserRouter>
               <FixedHeader className="App-header" ref={header}>
-                <Link
-                  to="/dashboard/play"
-                  style={{ textDecoration: "none", marginTop: "-2px" }}
-                >
-                  <h1
-                    className="App-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <div onClick={handleNav}>
+                  <Link
+                    to="/dashboard/play"
+                    style={{ textDecoration: "none", marginTop: "-2px" }}
                   >
-                    Moods
-                  </h1>
-                </Link>
+                    <h1
+                      className="App-link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Moods
+                    </h1>
+                  </Link>
+                </div>
                 <HeaderRight>
                   <div onClick={handleNav}>
                     {atLogin ? (
