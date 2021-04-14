@@ -4,8 +4,14 @@ const {
   spotifyPlaylists,
   spotifySavedTracks,
 } = require("./variables");
+const authService = require("./authService");
 axios.defaults.withCredentials = false;
-const tokens = JSON.parse(localStorage.getItem("tokens"));
+let tokens =
+  JSON.parse(localStorage.getItem("tokens")) ||
+  authService
+    .default()
+    .getTokens()
+    .then(res => (tokens = res));
 
 export default function spotifyService() {
   const fetchPlaylists = async () => {
