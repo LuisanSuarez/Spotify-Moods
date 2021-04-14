@@ -24,7 +24,7 @@ const FixedHeader = styled.header`
   box-sizing: border-box;
 `;
 
-const HeaderEnd = styled.div`
+const HeaderRight = styled.div`
   margin-right: 25px;
   display: flex;
   align-items: center;
@@ -34,13 +34,20 @@ const HeaderEnd = styled.div`
 `;
 
 function App() {
+  const splitPath = window.location.pathname.split("/");
+
   const [playerHeight, setPlayerHeight] = useState("52px");
   const [headerHeight, setHeaderHeight] = useState("62px");
-  const [isMainView, setIsMainView] = useState(
-    window.location.pathname.split("/").pop() === "play"
+  const [atDashboard, setAtDashboard] = useState(splitPath.includes("play"));
+  const [atLogin, setAtLogin] = useState(
+    splitPath.includes("login") || !splitPath[splitPath.length - 1]
   );
-
   const header = useRef(null);
+
+  useEffect(() => {
+    setAtLogin(splitPath.includes("login") || !splitPath[splitPath.length - 1]);
+    setAtDashboard(splitPath.includes("play"));
+  }, [splitPath]);
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(entries =>
@@ -63,13 +70,12 @@ function App() {
   };
 
   const handleNav = () => {
-    const isMainView = window.location.pathname.split("/").pop() === "play";
-    setIsMainView(isMainView);
+    const atDashboard = window.location.pathname.split("/").pop() === "play";
+    setAtDashboard(atDashboard);
   };
 
   return (
     <div className="App">
-      p
       <SongProvider>
         <TokenProvider>
           <TagsProvider>
@@ -87,9 +93,11 @@ function App() {
                     Moods
                   </h1>
                 </Link>
-                <HeaderEnd>
+                <HeaderRight>
                   <div onClick={handleNav}>
-                    {isMainView ? (
+                    {atLogin ? (
+                      ""
+                    ) : atDashboard ? (
                       <Link
                         style={{ textDecoration: "none" }}
                         to="/dashboard/sync"
@@ -108,7 +116,7 @@ function App() {
                   <Link to="#">
                     <img src={profileIcon} className="profile-icon" />
                   </Link>
-                </HeaderEnd>
+                </HeaderRight>
               </FixedHeader>
               <Switch>
                 <Route exact path="/">
