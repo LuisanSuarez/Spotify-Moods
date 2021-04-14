@@ -102,6 +102,7 @@ export default function SideBar({
       setSidebarWidth(newWidth);
     }
   };
+
   return (
     <SideBarContainer className="SIDEBAR" ref={sidebar} sidebarMB={sidebarMB}>
       <NavBar>

@@ -116,13 +116,13 @@ export default function Track({
     if (!newTag) return;
     const prevTags = [...tags];
     const newTags = [...tags, newTag];
-    setTags(newTags);
     const trackId = track.id;
     const result = await axios.post(url + "api/loadTags", {
       newTag,
       newTags,
       trackId,
     });
+    setTags(newTags);
     if (result.data.error && result.data.msg === "error-updating") {
       alert("there was an error updating your tags. please try again");
       setTags(prevTags);

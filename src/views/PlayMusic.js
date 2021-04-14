@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Tracks from "../components/Tracks";
+import { useTags } from "../hooks/TagsContext";
 import playlistsService from "../services/playlistsService";
 import PlaylistCreator from "../views/PlaylistCreator";
 import SideBar from "../views/SideBar";
@@ -35,11 +36,12 @@ export default function PlayMusic({
 
   const [sidebarWidth, setSidebarWidth] = useState("16vw");
 
+  const contextTags = useTags();
+
   useEffect(async () => {
     const allTags = await playlistsService().getTags();
-
     setAllTags(allTags);
-  }, []);
+  }, [contextTags]);
 
   useEffect(async () => {
     const savedPlaylists =

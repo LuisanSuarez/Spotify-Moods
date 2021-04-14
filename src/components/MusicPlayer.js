@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "react-spotify-web-playback";
 import styled from "styled-components";
 import Loading from "../components/utilities/Loading";
-import { useSong } from "../hooks/SongContext";
-import { useTags } from "../hooks/TagsContext";
+import { useSong, useSongSelection } from "../hooks/SongContext";
+import { useTags, useTagsUpdating } from "../hooks/TagsContext";
 import { devUrl, prodUrl } from "../services/variables";
 import "./musicPlayer.css";
 import Track from "./Track";
@@ -13,6 +13,7 @@ const TrackContainer = styled.div``;
 
 function MusicPlayer({ token }) {
   let song = useSong();
+  const setSong = useSongSelection();
   const dashboardTags = useTags();
   const player = useRef();
   const [state, setStatefulness] = useState({});
@@ -21,6 +22,7 @@ function MusicPlayer({ token }) {
   const [tags, setTags] = useState([]);
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
+  const setContextTags = useTagsUpdating();
 
   const callback = async state => {
     if (state.deviceId) sessionStorage.setItem("deviceId", state.deviceId);
@@ -28,6 +30,9 @@ function MusicPlayer({ token }) {
       const songTags = await getTags(state.track.uri);
       setTags(songTags);
     }
+    const { uri } = state.track;
+    setContextTags({ tags, uri });
+    setSong(uri);
     setStatefulness(artistsAsArray(state));
   };
 
@@ -51,6 +56,8 @@ function MusicPlayer({ token }) {
 
   useEffect(async () => {
     // if (Array.isArray(song)) song = song[0];
+    const isPlaylist = state.nextTracks?.length || state.previousTracks?.length;
+    if (isPlaylist) return;
     if (song) {
       const songTags = await getTags(song);
       setTags(songTags);
