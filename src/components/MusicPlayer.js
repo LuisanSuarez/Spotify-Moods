@@ -28,6 +28,7 @@ function MusicPlayer({ token }) {
     if (state.deviceId) sessionStorage.setItem("deviceId", state.deviceId);
     if (state.nextTracks.length || state.previousTracks.length) {
       const songTags = await getTags(state.track.uri);
+      console.log({ songTags });
       setTags(songTags);
     }
     const { uri } = state.track;
@@ -58,7 +59,7 @@ function MusicPlayer({ token }) {
   useEffect(async () => {
     // if (Array.isArray(song)) song = song[0];
     const isPlaylist = state.nextTracks?.length || state.previousTracks?.length;
-    console.log({ isPlaylist });
+    console.log({ isPlaylist, state });
     if (isPlaylist) return;
     if (song) {
       const songTags = await getTags(song);
