@@ -14,7 +14,6 @@ export function useTagsUpdating() {
 export function TagsProvider({ children }) {
   const [tags, setTags] = useState({ tags: [], uri: "" });
   function updateTags(tags) {
-    console.log({ tags });
     setTags(tags);
   }
 

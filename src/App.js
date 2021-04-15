@@ -45,7 +45,6 @@ function App() {
   const header = useRef(null);
 
   useEffect(() => {
-    console.log("split path");
     setAtLogin(splitPath.includes("login") || !splitPath[splitPath.length - 1]);
     setAtDashboard(splitPath.includes("play"));
   }, [splitPath]);

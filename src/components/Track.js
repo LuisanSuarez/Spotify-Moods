@@ -150,21 +150,18 @@ export default function Track({
   }, [tags]);
 
   useEffect(() => {
-    console.log({ contextTags });
     if (contextTags.uri === uri && contextTags.tags.length !== tags.length) {
       setTags(contextTags.tags);
     }
   }, [contextTags]);
 
   const handlePlay = uri => {
-    console.log("track, setSong:", { tags, uri });
-
     setContextTags({ tags, uri });
     setSong(uri);
   };
 
   const editTag = editIndex => {
-    // console.log("figure out a way to edit tags later");
+    // figure out a way to edit tags later
   };
 
   return (
