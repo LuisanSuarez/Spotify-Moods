@@ -31,7 +31,11 @@ const TrackFocus = styled.div`
     props.isSelected ? COLOR.translucentShade : "transparent"};
   &:hover {
     background-color: ${props =>
-      props.isSelected ? COLOR.translucentShade : COLOR.transparentShade};
+      props.isOnPlayer
+        ? "transparent"
+        : props.isSelected
+        ? COLOR.translucentShade
+        : COLOR.transparentShade};
   }
 `;
 
@@ -68,11 +72,7 @@ const Song = styled.div`
   width: 100%;
   box-sizing: border-box;
   padding-top: 4px;
-  &:hover {
-    background: ${props =>
-      props.isSelected ? "rgb(167,173,157)" : "rgb(101, 113, 85)"};
-    z-index: 1;
-  }
+  z-index: 1;
 `;
 const Artists = styled.div`
   height: 35%;
@@ -100,6 +100,7 @@ export default function Track({
   track = { image: "", name: "", uri: "", artists: [] },
   trackTags,
   tagsCount,
+  isOnPlayer = false,
 }) {
   const [tags, setTags] = useState(trackTags ? trackTags : []);
   const setSong = useSongSelection();
@@ -166,10 +167,13 @@ export default function Track({
 
   return (
     <TrackContainer>
-      <TrackFocus isSelected={uri === selectedSong}>
+      <TrackFocus
+        isSelected={uri === selectedSong && !isOnPlayer}
+        isOnPlayer={isOnPlayer}
+      >
         <AlbumImage src={image} />
         <TrackInfo width={WIDTH}>
-          <Song isSelected={uri === selectedSong}>
+          <Song isSelected={uri === selectedSong && !isOnPlayer}>
             <SongName width={WIDTH}>{name}</SongName>
           </Song>
           <Artists>

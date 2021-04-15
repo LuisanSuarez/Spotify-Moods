@@ -96,6 +96,7 @@ function MusicPlayer({ token }) {
             track={state.track}
             trackTags={tags}
             tagsCount={{}}
+            isOnPlayer
           />
         </TrackContainer>
       ) : (
