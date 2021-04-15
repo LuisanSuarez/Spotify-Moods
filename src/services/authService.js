@@ -29,3 +29,4 @@ export default function authService() {
 }
 
 // module.exports = authService();
+// Vercel deploys fail if we export using modules

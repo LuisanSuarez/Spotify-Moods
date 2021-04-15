@@ -50,4 +50,5 @@ export default function spotifyService() {
     fetchTracks,
   };
 }
-//// module.exports = spotifyService();
+// module.exports = spotifyService();
+// Vercel deploys fail if we export using modules
