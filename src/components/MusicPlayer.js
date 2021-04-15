@@ -14,7 +14,8 @@ const TrackContainer = styled.div``;
 function MusicPlayer({ token }) {
   let song = useSong();
   const setSong = useSongSelection();
-  const dashboardTags = useTags();
+  const contextTags = useTags();
+  const setContextTags = useTagsUpdating();
   const player = useRef();
   const [state, setStatefulness] = useState({});
   const [selectedSong, setSelectedSong] = useState(song);
@@ -22,21 +23,28 @@ function MusicPlayer({ token }) {
   const [tags, setTags] = useState([]);
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
-  const setContextTags = useTagsUpdating();
 
   const callback = async state => {
     if (state.deviceId) sessionStorage.setItem("deviceId", state.deviceId);
+    let songTags;
     if (state.nextTracks.length || state.previousTracks.length) {
-      const songTags = await getTags(state.track.uri);
+      songTags = await getTags(state.track.uri);
       console.log({ songTags });
       setTags(songTags);
     }
     const { uri } = state.track;
-    console.log({ state, uri, tags });
-    setContextTags({ tags, uri });
-    setSong(uri);
+    setContextTags({ tags: songTags || tags, uri });
     setStatefulness(artistsAsArray(state));
+    console.log("setting song in mplayer");
+    setSong(uri);
   };
+
+  // useEffect(() => {
+  //   if (!state.track) return;
+  //   const { uri } = state.track;
+  //   console.log("will set newTags with:", tags);
+  //   console.log("newTags:", { tags });
+  // }, [tags]);
 
   const artistsAsArray = state => {
     if (Array.isArray(state.track.artists)) return state;
@@ -59,16 +67,15 @@ function MusicPlayer({ token }) {
   useEffect(async () => {
     // if (Array.isArray(song)) song = song[0];
     const isPlaylist = state.nextTracks?.length || state.previousTracks?.length;
-    console.log({ isPlaylist, state });
-    if (isPlaylist) return;
+    console.log({ isPlaylist, song, state });
+    if (isPlaylist && song === state.track.uri) return;
     if (song) {
       const songTags = await getTags(song);
+      console.log({ song, tags, songTags });
       setTags(songTags);
     }
     setSelectedSong(song);
   }, [song]);
-
-  useEffect(() => {}, [tags]);
 
   useEffect(() => {
     setWait(!wait);
@@ -82,8 +89,10 @@ function MusicPlayer({ token }) {
   }, [wait]);
 
   useEffect(() => {
-    setTags(dashboardTags.tags);
-  }, [dashboardTags]);
+    console.log("its the dashboard tags, ain't it?:", tags);
+    console.log("contextTags.tags:", contextTags.tags);
+    setTags(contextTags.tags);
+  }, [contextTags]);
 
   const getTags = async uri => {
     let tags = await axios.get(url + "api/getSongTags", { params: { uri } });
