@@ -99,7 +99,7 @@ const PlayButtonContainer = styled.div`
 export default function Track({
   track = { image: "", name: "", uri: "", artists: [] },
   trackTags,
-  tagsCount,
+  allTags,
   isOnPlayer = false,
 }) {
   const [tags, setTags] = useState(trackTags ? trackTags : []);
@@ -107,6 +107,12 @@ export default function Track({
   const selectedSong = useSong();
   const setContextTags = useTagsUpdating();
   const contextTags = useTags();
+
+  allTags = allTags.map(tag => tag.tag);
+
+  const selectionTags = allTags
+    ? allTags.filter(tag => !tags.includes(tag))
+    : [];
 
   let { image, name, uri, artists } = track;
   artists = artists ? artists : [];
@@ -188,7 +194,7 @@ export default function Track({
         <Tags tags={tags} deleteTag={deleteTag} editTag={editTag} />
 
         <TagsSelection
-          options={Object.keys(tagsCount)}
+          options={selectionTags}
           type="addTags"
           label="add new tag"
           submit={handleNewTag}

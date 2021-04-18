@@ -17,7 +17,7 @@ const TracksContainer = styled.div`
   overflow-y: scroll;
 `;
 
-export default function Tracks({ tagsCount, displayPlaylist }) {
+export default function Tracks({ allTags, displayPlaylist }) {
   const playlistId = displayPlaylist.id || displayPlaylist.tag;
   const playlistName = displayPlaylist.name || displayPlaylist.tag;
 
@@ -124,7 +124,7 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
                 key={track.id}
                 track={track}
                 trackTags={track.tags}
-                tagsCount={tagsCount}
+                allTags={allTags}
               />
             ))
           ) : (

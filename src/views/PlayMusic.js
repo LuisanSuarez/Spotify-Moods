@@ -71,7 +71,7 @@ export default function PlayMusic({
         <Tracks
           className="musics"
           authTokens={tokens}
-          tagsCount={tagsCount}
+          allTags={allTags}
           displayPlaylist={displayPlaylist}
         />
       </MusicFlex>
