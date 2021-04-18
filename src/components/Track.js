@@ -121,6 +121,10 @@ export default function Track({
 
   const handleNewTag = async newTag => {
     if (!newTag) return;
+    if (tags.includes(newTag)) {
+      showTagAlreadyExists();
+      return;
+    }
     const prevTags = [...tags];
     const newTags = [...tags, newTag];
     const trackId = track.id;
@@ -168,7 +172,11 @@ export default function Track({
   };
 
   const editTag = editIndex => {
-    // figure out a way to edit tags later
+    // figure out a way to edit tags
+  };
+
+  const showTagAlreadyExists = tag => {
+    // put in some nice UX
   };
 
   return (
