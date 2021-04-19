@@ -99,7 +99,7 @@ const PlayButtonContainer = styled.div`
 export default function Track({
   track = { image: "", name: "", uri: "", artists: [] },
   trackTags,
-  allTags,
+  allTags = [],
   isOnPlayer = false,
 }) {
   const [tags, setTags] = useState(trackTags ? trackTags : []);
