@@ -74,6 +74,7 @@ export default function tracksService() {
 }
 
 // module.exports = tracksService();
+// Vercel deploys fail if we export using modules
 
 // const sanitizeTracksObject = rawTracks => {
 //   const tracks = {};

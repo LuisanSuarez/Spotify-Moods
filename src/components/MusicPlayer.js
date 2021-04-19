@@ -29,22 +29,13 @@ function MusicPlayer({ token }) {
     let songTags;
     if (state.nextTracks.length || state.previousTracks.length) {
       songTags = await getTags(state.track.uri);
-      console.log({ songTags });
       setTags(songTags);
     }
     const { uri } = state.track;
     setContextTags({ tags: songTags || tags, uri });
     setStatefulness(artistsAsArray(state));
-    console.log("setting song in mplayer");
     setSong(uri);
   };
-
-  // useEffect(() => {
-  //   if (!state.track) return;
-  //   const { uri } = state.track;
-  //   console.log("will set newTags with:", tags);
-  //   console.log("newTags:", { tags });
-  // }, [tags]);
 
   const artistsAsArray = state => {
     if (Array.isArray(state.track.artists)) return state;
@@ -65,13 +56,10 @@ function MusicPlayer({ token }) {
   };
 
   useEffect(async () => {
-    // if (Array.isArray(song)) song = song[0];
     const isPlaylist = state.nextTracks?.length || state.previousTracks?.length;
-    console.log({ isPlaylist, song, state });
     if (isPlaylist && song === state.track.uri) return;
     if (song) {
       const songTags = await getTags(song);
-      console.log({ song, tags, songTags });
       setTags(songTags);
     }
     setSelectedSong(song);
@@ -89,8 +77,6 @@ function MusicPlayer({ token }) {
   }, [wait]);
 
   useEffect(() => {
-    console.log("its the dashboard tags, ain't it?:", tags);
-    console.log("contextTags.tags:", contextTags.tags);
     setTags(contextTags.tags);
   }, [contextTags]);
 
@@ -110,6 +96,7 @@ function MusicPlayer({ token }) {
             track={state.track}
             trackTags={tags}
             tagsCount={{}}
+            isOnPlayer
           />
         </TrackContainer>
       ) : (

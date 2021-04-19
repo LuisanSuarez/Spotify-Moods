@@ -106,8 +106,7 @@ export default function PlaylistCreator({ tags }) {
     songs = await filterExclusive(songs, onlyWithTags);
     songs = shuffle(songs);
     songs = songs.map(uri => "spotify:track:" + uri.id);
-    // WHAT TO DO IF IS EMPTY
-    console.log("will start playlist with:", { songs });
+    // XXX WHAT TO DO IF IS EMPTY
     startPlaylist(songs);
   };
 
@@ -128,7 +127,6 @@ export default function PlaylistCreator({ tags }) {
 
   const filterExclusive = async (songs, shouldFilter) => {
     const tracksWithTags = await tracksService().getTracksBulk(songs);
-    console.log({ tracksWithTags });
     if (!shouldFilter) return tracksWithTags;
     const hasAllTags = song => {
       const response = includedTags.every(tag => song.tags.includes(tag));

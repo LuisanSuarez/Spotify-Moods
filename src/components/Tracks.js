@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { throttle } from "lodash";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import playlistsService from "../services/playlistsService";
 import tracksService from "../services/tracksService";
-import { devUrl, prodUrl } from "../services/variables";
 import Track from "./Track";
 import Error from "./utilities/Error";
 import Loading from "./utilities/Loading";
@@ -17,27 +17,36 @@ const TracksContainer = styled.div`
   overflow-y: scroll;
 `;
 
-export default function Tracks({ tagsCount, displayPlaylist }) {
+export default function Tracks({ allTags, displayPlaylist }) {
   const playlistId = displayPlaylist.id || displayPlaylist.tag;
   const playlistName = displayPlaylist.name || displayPlaylist.tag;
-  const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchingMore, setFetchingMore] = useState(false);
+  const [startFetch, setStartFetch] = useState(false);
+  const [lastPageFetched, setLastPageFetched] = useState(0);
+  const [trackIds, setTrackIds] = useState([]);
+  const scrollElement = useRef(null);
+  const limit = 20;
 
   useEffect(async () => {
     if (!playlistId) return;
 
     setLoading(true);
-
     let newTracks;
-    let tracksIds;
+    let trackIds;
     try {
       if (playlistId === "Untagged songs") {
         newTracks = await playlistsService().getUntaggedSongs();
       } else {
-        tracksIds = await playlistsService().getPlaylistTrackIds(playlistId);
-        newTracks = await tracksService().getTracksBulk(tracksIds);
+        trackIds = await playlistsService().getPlaylistTrackIds(playlistId);
+        const nextLimit = limit;
+        newTracks = await tracksService().getTracksBulk(
+          trackIds.slice(0, nextLimit)
+        );
+        setLastPageFetched(1);
+        setTrackIds(trackIds);
       }
     } catch (error) {
       console.error(error);
@@ -50,10 +59,64 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
     }
   }, [displayPlaylist]);
 
+  useEffect(() => {
+    if (startFetch) getMoreTracks();
+  }, [startFetch]);
+
+  const getMoreTracks = async () => {
+    if (loading || fetchingMore) return;
+    setFetchingMore(true);
+    const startsFrom = lastPageFetched * limit;
+    const nextLimit = (lastPageFetched + 1) * limit;
+
+    let newTracks;
+    try {
+      newTracks = await tracksService().getTracksBulk(
+        trackIds.slice(startsFrom, nextLimit)
+      );
+    } catch (error) {
+      alert("present error:", JSON.stringify(error));
+      console.error(error);
+      newTracks = [];
+    } finally {
+      setLastPageFetched(lastPageFetched + 1);
+      setTracks([...tracks, ...newTracks]);
+      setFetchingMore(false);
+      setStartFetch(false);
+    }
+  };
+
+  function getScrollDistToBottom() {
+    const target = scrollElement ? scrollElement.current : document.body;
+    const { scrollTop, offsetHeight, scrollHeight } = target;
+    return scrollHeight - (offsetHeight + scrollTop);
+  }
+
+  const handleScroll = param => {
+    const target = scrollElement.current;
+    const distance = getScrollDistToBottom(target);
+    if (distance < 250) {
+      if (!fetchingMore) setStartFetch(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!scrollElement.current) return;
+    const target = scrollElement.current;
+
+    target.addEventListener("scroll", throttle(handleScroll));
+
+    return () => {
+      if (target) {
+        target.removeEventListener("scroll", throttle(handleScroll));
+      }
+    };
+  }, [scrollElement.current, displayPlaylist]);
+
   return (
     <>
       {displayPlaylist && !loading ? (
-        <TracksContainer>
+        <TracksContainer ref={scrollElement}>
           <h2 style={{ width: "100%" }}>{playlistName}</h2>
           {tracks[0] ? (
             tracks.map((track, index) => (
@@ -61,7 +124,7 @@ export default function Tracks({ tagsCount, displayPlaylist }) {
                 key={track.id}
                 track={track}
                 trackTags={track.tags}
-                tagsCount={tagsCount}
+                allTags={allTags}
               />
             ))
           ) : (

@@ -31,7 +31,11 @@ const TrackFocus = styled.div`
     props.isSelected ? COLOR.translucentShade : "transparent"};
   &:hover {
     background-color: ${props =>
-      props.isSelected ? COLOR.translucentShade : COLOR.transparentShade};
+      props.isOnPlayer
+        ? "transparent"
+        : props.isSelected
+        ? COLOR.translucentShade
+        : COLOR.transparentShade};
   }
 `;
 
@@ -68,11 +72,7 @@ const Song = styled.div`
   width: 100%;
   box-sizing: border-box;
   padding-top: 4px;
-  &:hover {
-    background: ${props =>
-      props.isSelected ? "rgb(167,173,157)" : "rgb(101, 113, 85)"};
-    z-index: 1;
-  }
+  z-index: 1;
 `;
 const Artists = styled.div`
   height: 35%;
@@ -99,13 +99,20 @@ const PlayButtonContainer = styled.div`
 export default function Track({
   track = { image: "", name: "", uri: "", artists: [] },
   trackTags,
-  tagsCount,
+  allTags,
+  isOnPlayer = false,
 }) {
   const [tags, setTags] = useState(trackTags ? trackTags : []);
   const setSong = useSongSelection();
   const selectedSong = useSong();
   const setContextTags = useTagsUpdating();
   const contextTags = useTags();
+
+  allTags = allTags.map(tag => tag.tag);
+
+  const selectionTags = allTags
+    ? allTags.filter(tag => !tags.includes(tag))
+    : [];
 
   let { image, name, uri, artists } = track;
   artists = artists ? artists : [];
@@ -114,6 +121,10 @@ export default function Track({
 
   const handleNewTag = async newTag => {
     if (!newTag) return;
+    if (tags.includes(newTag)) {
+      showTagAlreadyExists();
+      return;
+    }
     const prevTags = [...tags];
     const newTags = [...tags, newTag];
     const trackId = track.id;
@@ -150,29 +161,33 @@ export default function Track({
   }, [tags]);
 
   useEffect(() => {
-    console.log({ contextTags });
     if (contextTags.uri === uri && contextTags.tags.length !== tags.length) {
       setTags(contextTags.tags);
     }
   }, [contextTags]);
 
   const handlePlay = uri => {
-    console.log("track, setSong:", { tags, uri });
-
     setContextTags({ tags, uri });
     setSong(uri);
   };
 
   const editTag = editIndex => {
-    // console.log("figure out a way to edit tags later");
+    // figure out a way to edit tags
+  };
+
+  const showTagAlreadyExists = tag => {
+    // put in some nice UX
   };
 
   return (
     <TrackContainer>
-      <TrackFocus isSelected={uri === selectedSong}>
+      <TrackFocus
+        isSelected={uri === selectedSong && !isOnPlayer}
+        isOnPlayer={isOnPlayer}
+      >
         <AlbumImage src={image} />
         <TrackInfo width={WIDTH}>
-          <Song isSelected={uri === selectedSong}>
+          <Song isSelected={uri === selectedSong && !isOnPlayer}>
             <SongName width={WIDTH}>{name}</SongName>
           </Song>
           <Artists>
@@ -187,7 +202,7 @@ export default function Track({
         <Tags tags={tags} deleteTag={deleteTag} editTag={editTag} />
 
         <TagsSelection
-          options={Object.keys(tagsCount)}
+          options={selectionTags}
           type="addTags"
           label="add new tag"
           submit={handleNewTag}

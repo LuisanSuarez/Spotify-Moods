@@ -14,7 +14,6 @@ export function useSongSelection() {
 export function SongProvider({ children }) {
   const [song, setSong] = useState("");
   function selectSong(uri) {
-    console.log("setting song:", uri);
     setSong(uri);
   }
 
