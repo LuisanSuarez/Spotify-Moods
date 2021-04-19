@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Tracks from "../components/Tracks";
 import { useTags } from "../hooks/TagsContext";
 import playlistsService from "../services/playlistsService";
+import variables from "../services/variables";
 import PlaylistCreator from "../views/PlaylistCreator";
 import SideBar from "../views/SideBar";
 
@@ -48,8 +49,15 @@ export default function PlayMusic({
       JSON.parse(localStorage.getItem("saved_playlists")) ||
       (await playlistsService().getPlaylistsNames());
     localStorage.setItem("saved_playlists", JSON.stringify(savedPlaylists));
-    setAllPlaylists(savedPlaylists);
-    setDisplayPlaylist(savedPlaylists[0]);
+    if (savedPlaylists.length) {
+      setAllPlaylists(savedPlaylists);
+      setDisplayPlaylist(savedPlaylists[0]);
+    } else {
+      setDisplayPlaylist({
+        id: variables.newUserId,
+        name: variables.newUserWelcome,
+      });
+    }
   }, []);
 
   return (
