@@ -22,6 +22,7 @@ const Name = styled.h4`
   align-items: center;
   margin: ${props => SIZES[props.size].titleMargin};
   font-size: ${props => SIZES[props.size].titleSize};
+  color: ${props => (props.selected ? "#000000" : COLOR.thirty)};
 `;
 
 const AlbumImage = styled.img`
@@ -85,7 +86,9 @@ export default function Playlist({ playlist, size = "md" }) {
       ) : (
         <Placeholder size={size}> {placeholderSizePicker(size)} </Placeholder>
       )}
-      <Name size={size}>{name}</Name>
+      <Name selected={selected} size={size}>
+        {name}
+      </Name>
     </PlaylistContainer>
   );
 }
