@@ -37,14 +37,6 @@ export default function PlayMusic({
 
   const contextTags = useTags();
 
-  const [force, deploy] = useState("this will be a");
-
-  useEffect(() => {
-    console.log("forced deploy");
-    force = force + "deploy";
-    deploy("forcing a deploy");
-  }, []);
-
   useEffect(async () => {
     const allTags = await playlistsService().getTags();
     setAllTags(allTags);

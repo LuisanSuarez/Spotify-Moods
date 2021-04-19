@@ -31,14 +31,6 @@ export default function Tracks({ allTags, displayPlaylist }) {
   const scrollElement = useRef(null);
   const limit = 20;
 
-  const [force, deploy] = useState("this will be a");
-
-  useEffect(() => {
-    console.log("forced deploy");
-    force = force + "deploy";
-    deploy("forcing a deploy");
-  }, []);
-
   useEffect(async () => {
     if (!playlistId) return;
 
