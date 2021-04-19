@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { ReactComponent as AlbumPlaceholderSM } from "../assets/img/icon/no-album-sm.svg";
 import { ReactComponent as AlbumPlaceholder } from "../assets/img/icon/no-album.svg";
 import { COLOR } from "../services/variables";
 
@@ -9,48 +10,82 @@ const PlaylistContainer = styled.div`
     background: ${props =>
       props.selected ? COLOR.translucentShade : COLOR.transparentShade};
   }
-  width: 80vw;
+  width: ${props => SIZES[props.size].containerWidth};
   min-width: 200px;
-  margin: 13px 50px 0;
+  margin: ${props => SIZES[props.size].containerMargin};
   background: ${props =>
     props.selected ? COLOR.translucentShade : "transparent"};
 `;
 
 const Name = styled.h4`
-  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  margin: ${props => SIZES[props.size].titleMargin};
+  font-size: ${props => SIZES[props.size].titleSize};
 `;
 
 const AlbumImage = styled.img`
-  width: 60px;
-  height: 60px;
-  margin: auto 0;
+  width: ${props => SIZES[props.size].width};
+  height: ${props => SIZES[props.size].height};
+  margin: 2px;
   margin-left: 12px;
 `;
 
 const Placeholder = styled.div`
-  width: 60px;
-  height: 60px;
+  width: ${props => SIZES[props.size].width};
+  height: ${props => SIZES[props.size].height};
   background: #333;
-  margin: auto 0;
+  margin: 2px;
   margin-left: 12px;
 `;
 
-export default function Playlist({ playlist }) {
+const SIZES = {
+  md: {
+    containerWidth: "80vw",
+    containerMargin: "13px 50px 0",
+    width: "60px",
+    height: "60px",
+    titleMargin: "21px 0 21px 16px",
+    titleSize: "1rem",
+  },
+  sm: {
+    containerWidth: "40vw",
+    containerMargin: "5px 50px 0",
+    width: "30px",
+    height: "30px",
+    titleMargin: "3px 0 3px 16px",
+    titleSize: "0.75rem",
+  },
+};
+
+const placeholderSizePicker = size => {
+  let placeholder;
+  switch (size) {
+    case "sm":
+      placeholder = <AlbumPlaceholderSM />;
+      break;
+    case "md":
+      placeholder = <AlbumPlaceholder />;
+      break;
+    default:
+      placeholder = <AlbumPlaceholder />;
+  }
+  return placeholder;
+};
+
+export default function Playlist({ playlist, size = "md" }) {
   const { name, selected } = playlist;
   const image = playlist.images[0]
     ? playlist.images[playlist.images.length - 1].url
     : null;
   return (
-    <PlaylistContainer selected={selected}>
+    <PlaylistContainer selected={selected} size={size}>
       {image ? (
-        <AlbumImage src={image} />
+        <AlbumImage src={image} size={size} />
       ) : (
-        <Placeholder>
-          {" "}
-          <AlbumPlaceholder />{" "}
-        </Placeholder>
+        <Placeholder size={size}> {placeholderSizePicker(size)} </Placeholder>
       )}
-      <Name>{name}</Name>
+      <Name size={size}>{name}</Name>
     </PlaylistContainer>
   );
 }
