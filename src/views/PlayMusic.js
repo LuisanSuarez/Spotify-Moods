@@ -33,8 +33,6 @@ export default function PlayMusic({
 
   const [allPlaylists, setAllPlaylists] = useState([]);
 
-  const [tagsCount, setTagsCount] = useState({});
-
   const [sidebarWidth, setSidebarWidth] = useState("16vw");
 
   const contextTags = useTags();
