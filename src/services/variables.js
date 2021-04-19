@@ -5,6 +5,9 @@ const variables = {
   spotifyUrl: "https://api.spotify.com/v1/me/",
   spotifyPlaylists: "https://api.spotify.com/v1/me/playlists/",
   spotifySavedTracks: "https://api.spotify.com/v1/me/tracks",
+  newUserId: "new_user",
+  newUserWelcome:
+    "Welcome to Moods! Go to Sync on the top right to load your first playlist",
 
   COLOR: {
     sixty: "#053225",

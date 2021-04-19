@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import playlistsService from "../services/playlistsService";
 import tracksService from "../services/tracksService";
+import variables from "../services/variables";
 import Track from "./Track";
 import Error from "./utilities/Error";
 import Loading from "./utilities/Loading";
@@ -34,6 +35,10 @@ export default function Tracks({ allTags, displayPlaylist }) {
     if (!playlistId) return;
 
     setLoading(true);
+    if (playlistId === variables.newUserId) {
+      setLoading(false);
+      return;
+    }
     let newTracks;
     let trackIds;
     try {
@@ -127,6 +132,8 @@ export default function Tracks({ allTags, displayPlaylist }) {
                 allTags={allTags}
               />
             ))
+          ) : playlistId === variables.newUserId ? (
+            ""
           ) : (
             <Error
               title="we didn't find your songs :("
