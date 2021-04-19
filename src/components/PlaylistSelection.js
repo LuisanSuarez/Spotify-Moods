@@ -4,7 +4,7 @@ import likedSongsImg from "../assets/img/play-button.png";
 import playlistsService from "../services/playlistsService";
 import spotifyService from "../services/spotifyService";
 import tracksService from "../services/tracksService";
-import { spotifySavedTracks } from "../services/variables";
+import { COLOR, spotifySavedTracks } from "../services/variables";
 import Playlist from "./Playlist";
 import Loading from "./utilities/Loading";
 
@@ -18,12 +18,42 @@ const ContainerFlex = styled.div`
   height: 100%;
 `;
 
+const LoadButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid ${COLOR.thirty};
+  border-radius: 8px;
+  box-sizing: border-box;
+  padding: 8px 20px;
+  background: ${props =>
+    props.selectedPlaylists.length ? COLOR.transparentShade : "transparent"};
+  color: ${COLOR.thirty};
+  width: 200px;
+  height: 85px;
+  margin: 16px auto;
+`;
+
+const LoadingContainer = styled.div`
+  height: 185px;
+  width: 90vw;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const StagedPlaylists = styled.div`
+  overflow-y: scroll;
+  height: 100%;
+`;
+
 export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [playlists, setPlaylists] = useState([]);
   const [savedPlaylists, setSavedPlaylists] = useState([]);
   const [filteredPlaylists, setFilteredPlaylists] = useState([]);
   const [selectedPlaylists, xyz] = useState(new Set());
   const [filterLoaded, setFilterLoaded] = useState(false);
+  const [stagedPlaylists, setStagedPlaylists] = useState([]);
 
   useEffect(async () => {
     const fetchedPlaylists =
@@ -68,9 +98,10 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
 
   const loadPlaylists = async () => {
     const playlistsCopy = [...playlists];
-    const playlistsToFetch = playlistsCopy.filter(playlist =>
-      selectedPlaylists.delete(playlist.id)
-    );
+    // const playlistsToFetch = playlistsCopy.filter(playlist =>
+    //   selectedPlaylists.delete(playlist.id)
+    // );
+    const playlistsToFetch = Array.from(selectedPlaylists);
 
     clearAll();
 
@@ -119,15 +150,22 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     });
   };
 
-  const handlePlaylistClick = (playlistId, index) => {
+  const handlePlaylistClick = (playlist, index) => {
+    const playlistId = playlist.id;
     const newPlaylists = [...playlists];
+    let newStagedPlaylists = [...stagedPlaylists];
     if (selectedPlaylists.delete(playlistId)) {
       delete newPlaylists[index].selected;
+      newStagedPlaylists = newStagedPlaylists.filter(
+        stagedPlaylist => stagedPlaylist.id !== playlistId
+      );
     } else {
       selectedPlaylists.add(playlistId);
       newPlaylists[index].selected = true;
+      newStagedPlaylists.push(playlist);
     }
     setPlaylists(newPlaylists);
+    setStagedPlaylists(newStagedPlaylists);
   };
 
   const selectAll = () => {
@@ -144,10 +182,14 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     const newPlaylists = [...playlists];
     newPlaylists.forEach(playlist => {
       playlist.selected = selected;
-      selected
-        ? selectedPlaylists.add(playlist.id)
-        : selectedPlaylists.delete(playlist.id);
+      if (selected) selectedPlaylists.add(playlist.id);
     });
+    if (!selected) {
+      selectedPlaylists.clear();
+      setStagedPlaylists([]);
+    } else {
+      setStagedPlaylists(newPlaylists);
+    }
     setPlaylists(newPlaylists);
   };
 
@@ -155,9 +197,23 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
 
   return (
     <ContainerFlex playerHeight={playerHeight} headerHeight={headerHeight}>
-      <div onClick={() => loadPlaylists()}>
-        <h2>Load Playlists</h2>
-      </div>
+      {stagedPlaylists[0] ? (
+        <LoadingContainer>
+          <LoadButton
+            selectedPlaylists={Array.from(selectedPlaylists)}
+            onClick={() => loadPlaylists()}
+          >
+            <h2>Load Playlists</h2>
+          </LoadButton>
+          <StagedPlaylists>
+            {stagedPlaylists.map(playlist => (
+              <Playlist key={playlist.id} playlist={playlist} size="sm" />
+            ))}
+          </StagedPlaylists>
+        </LoadingContainer>
+      ) : (
+        ""
+      )}
       <div onClick={selectAll}>Select All</div>
       <div onClick={clearAll}>Clear All</div>
       <div onClick={toggleShowLoaded}>
@@ -170,7 +226,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
             playlists.map((playlist, index) => (
               <div
                 key={playlist.id}
-                onClick={() => handlePlaylistClick(playlist.id, index)}
+                onClick={() => handlePlaylistClick(playlist, index)}
               >
                 <Playlist playlist={playlist} />
               </div>
