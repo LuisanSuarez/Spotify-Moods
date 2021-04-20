@@ -91,7 +91,7 @@ function App() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Moods
+                      Jaden is sooo beautiful
                     </h1>
                   </Link>
                 </div>
