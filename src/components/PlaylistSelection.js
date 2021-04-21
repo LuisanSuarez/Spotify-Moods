@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import staged from "../assets/img/icon/black-circle.png";
+import loaded from "../assets/img/icon/check.png";
+import loading from "../assets/img/icon/ellipsis.png";
+import failed from "../assets/img/icon/failed.png";
 import likedSongsImg from "../assets/img/play-button.png";
 import playlistsService from "../services/playlistsService";
 import spotifyService from "../services/spotifyService";
@@ -47,9 +51,20 @@ const StagedPlaylists = styled.div`
   height: 100%;
 `;
 
+const StagedList = styled.div`
+  display: flex;
+  justify-content: flex-start;
+`;
+
+const LoadingStatus = styled.img`
+  width: 30px;
+  height: 30px;
+`;
+
 export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [playlists, setPlaylists] = useState([]);
   const [savedPlaylists, setSavedPlaylists] = useState([]);
+  const [loadingQueue, setLoadingQueue] = useState([]);
   const [filteredPlaylists, setFilteredPlaylists] = useState([]);
   const [selectedPlaylists, xyz] = useState(new Set());
   const [filterLoaded, setFilterLoaded] = useState(false);
@@ -96,39 +111,108 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     setFilteredPlaylists(filteredPlaylists);
   }, [savedPlaylists]);
 
-  const loadPlaylists = async () => {
-    const playlistsCopy = [...playlists];
-    // const playlistsToFetch = playlistsCopy.filter(playlist =>
-    //   selectedPlaylists.delete(playlist.id)
-    // );
-    const playlistsToFetch = Array.from(selectedPlaylists);
+  useEffect(async () => {
+    const newLoadingQueue = JSON.parse(JSON.stringify(loadingQueue));
+    const newStagedPlaylists = JSON.parse(JSON.stringify(stagedPlaylists));
+    if (!newLoadingQueue[0]) {
+      const finishedLoadingPlaylists =
+        newStagedPlaylists[0] &&
+        newStagedPlaylists.every(
+          playlist =>
+            playlist.status === "loaded" || playlist.status === "failed"
+        );
+      if (finishedLoadingPlaylists) updateCachedPlaylists(newStagedPlaylists);
 
+      return;
+    }
+
+    const { status } = newLoadingQueue[0];
+
+    if (status === "staged") {
+      const currentPlaylistId = newLoadingQueue[0].id;
+      const stagedIndex = newStagedPlaylists.findIndex(
+        stagedPlaylist => stagedPlaylist.id === currentPlaylistId
+      );
+
+      newStagedPlaylists[stagedIndex].status = "loading";
+      setStagedPlaylists(newStagedPlaylists);
+    }
+
+    if (status === "loading") {
+      const result = await loadOnePlaylist(newLoadingQueue[0]);
+      setStagedPlaylists(result);
+    }
+
+    if (status === "loaded" || status === "failed") {
+      newLoadingQueue.shift();
+      setLoadingQueue(newLoadingQueue);
+    }
+  }, [loadingQueue]);
+
+  useEffect(() => {
+    const newLoadingQueue = JSON.parse(JSON.stringify(loadingQueue));
+    const newStagedPlaylists = JSON.parse(JSON.stringify(stagedPlaylists));
+
+    if (!newLoadingQueue[0]) return;
+    if (!newStagedPlaylists[0]) return;
+
+    const stagedStatus = newStagedPlaylists[0].status;
+    if (stagedStatus === "staged") return;
+
+    const { status } = newLoadingQueue[0];
+
+    if (status === "staged") newLoadingQueue[0].status = "loading";
+
+    if (status === "loading") newLoadingQueue[0].status = "loaded";
+
+    if (status === "failed") newLoadingQueue[0].status = "failed";
+
+    setLoadingQueue(newLoadingQueue);
+  }, [stagedPlaylists]);
+
+  const loadPlaylists = async () => {
     clearAll();
 
-    const failures = [];
-    const successes = [];
-    // with forEach and async, we'll finish before all fetch calls are done.
-    // failures array will still be empty, no matter what happens
-    // if we want it to wait, either use a for loop or check this out
-    // https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
-    // update: we've since changed it to a for loop. want to keep this link
-    // around for a little longer though.
-    for (let i = 0; i < playlistsToFetch.length; i++) {
-      let playlist = playlistsToFetch[i];
-      const result = await spotifyService().fetchTracks(playlist.tracks.href);
-      if (!result.error) {
-        const tracks = tracksService().sanitizeTracksArray(result.data);
-        tracksService().addTracksToDatabase(tracks);
-        playlistsService().createOrUpdatePlaylistCollection(
-          playlist.id,
-          tracks
-        );
-        playlistsService().addPlaylistToAllPlaylists(playlist);
-        successes.push(playlist);
-      } else {
-        failures.push(playlist);
-      }
+    const newLoadingQueue = stagedPlaylists.map(playlist => {
+      playlist.status = "staged";
+      return playlist;
+    });
+
+    const newStagedPlaylists = JSON.parse(JSON.stringify(newLoadingQueue));
+
+    setStagedPlaylists(newStagedPlaylists);
+    setLoadingQueue(newLoadingQueue);
+  };
+
+  const loadOnePlaylist = async playlist => {
+    const playlistId = playlist.id;
+    const newStagedPlaylists = JSON.parse(JSON.stringify(stagedPlaylists));
+
+    const updateIndex = newStagedPlaylists.findIndex(
+      list => list.id === playlistId
+    );
+    const result = await spotifyService().fetchTracks(playlist.tracks.href);
+    if (!result.error) {
+      const tracks = tracksService().sanitizeTracksArray(result.data);
+      // error handling in all these steps
+      await tracksService().addTracksToDatabase(tracks);
+      await playlistsService().createOrUpdatePlaylistCollection(
+        playlist.id,
+        tracks
+      );
+      await playlistsService().addPlaylistToAllPlaylists(playlist);
+
+      newStagedPlaylists[updateIndex].status = "loaded";
+    } else {
+      newStagedPlaylists[updateIndex].status = "failed";
     }
+    return newStagedPlaylists;
+  };
+
+  const updateCachedPlaylists = newStagedPlaylists => {
+    const successes = newStagedPlaylists.filter(
+      playlist => playlist.status === "loaded"
+    );
 
     const updatedSavedPlaylists = [
       ...savedPlaylists,
@@ -151,9 +235,16 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   };
 
   const handlePlaylistClick = (playlist, index) => {
+    const finishedLoadingPlaylists =
+      stagedPlaylists[0] &&
+      stagedPlaylists.every(
+        playlist => playlist.status === "loaded" || playlist.status === "failed"
+      );
     const playlistId = playlist.id;
     const newPlaylists = [...playlists];
-    let newStagedPlaylists = [...stagedPlaylists];
+    let newStagedPlaylists = finishedLoadingPlaylists
+      ? []
+      : [...stagedPlaylists];
     if (selectedPlaylists.delete(playlistId)) {
       delete newPlaylists[index].selected;
       newStagedPlaylists = newStagedPlaylists.filter(
@@ -193,6 +284,29 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     setPlaylists(newPlaylists);
   };
 
+  const getLoadingStatusIcon = status => {
+    let icon;
+    switch (status) {
+      case "staged":
+        icon = <LoadingStatus src={staged} />;
+        break;
+      case "loading":
+        icon = <LoadingStatus src={loading} />;
+        // https://www.npmjs.com/package/react-loading
+        break;
+      case "loaded":
+        icon = <LoadingStatus src={loaded} />;
+        break;
+      case "failed":
+        icon = <LoadingStatus src={failed} />;
+        break;
+      default:
+        icon = <div>hola friends</div>;
+        icon = <LoadingStatus src={staged} />;
+    }
+    return icon;
+  };
+
   const toggleShowLoaded = () => setFilterLoaded(!filterLoaded);
 
   return (
@@ -207,7 +321,10 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
           </LoadButton>
           <StagedPlaylists>
             {stagedPlaylists.map(playlist => (
-              <Playlist key={playlist.id} playlist={playlist} size="sm" />
+              <StagedList key={playlist.id}>
+                <Playlist playlist={playlist} size="sm" />
+                {getLoadingStatusIcon(playlist.status)}
+              </StagedList>
             ))}
           </StagedPlaylists>
         </LoadingContainer>
