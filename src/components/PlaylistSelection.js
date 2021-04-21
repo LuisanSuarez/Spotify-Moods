@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
+import ReactLoading from "react-loading";
 import styled from "styled-components";
-import staged from "../assets/img/icon/black-circle.png";
 import loaded from "../assets/img/icon/check.png";
-import loading from "../assets/img/icon/ellipsis.png";
 import failed from "../assets/img/icon/failed.png";
+import staged from "../assets/img/icon/loading-circle.png";
 import likedSongsImg from "../assets/img/play-button.png";
 import playlistsService from "../services/playlistsService";
 import spotifyService from "../services/spotifyService";
@@ -62,10 +62,15 @@ const StagedList = styled.div`
   align-items: center;
 `;
 
-const LoadingStatus = styled.img`
+const StatusIconContainer = styled.div`
   width: 30px;
   height: 30px;
   margin: 0 auto;
+`;
+
+const LoadingStatus = styled.img`
+  width: 100%;
+  height: 100%;
 `;
 
 export default function PlaylistSelection({ headerHeight, playerHeight }) {
@@ -198,6 +203,8 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     const updateIndex = newStagedPlaylists.findIndex(
       list => list.id === playlistId
     );
+
+    // const mock = await mockService().wait(4000);
     const result = await spotifyService().fetchTracks(playlist.tracks.href);
     if (!result.error) {
       const tracks = tracksService().sanitizeTracksArray(result.data);
@@ -298,8 +305,14 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
         icon = <LoadingStatus src={staged} />;
         break;
       case "loading":
-        icon = <LoadingStatus src={loading} />;
-        // https://www.npmjs.com/package/react-loading
+        icon = (
+          <ReactLoading
+            type="bubbles"
+            color={COLOR.thirty}
+            height="30px"
+            width="30px"
+          />
+        );
         break;
       case "loaded":
         icon = <LoadingStatus src={loaded} />;
@@ -329,7 +342,9 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
             {stagedPlaylists.map(playlist => (
               <StagedList key={playlist.id}>
                 <Playlist playlist={playlist} size="sm" />
-                {getLoadingStatusIcon(playlist.status)}
+                <StatusIconContainer>
+                  {getLoadingStatusIcon(playlist.status)}
+                </StatusIconContainer>
               </StagedList>
             ))}
           </StagedPlaylists>
