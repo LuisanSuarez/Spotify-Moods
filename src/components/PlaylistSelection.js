@@ -40,25 +40,32 @@ const LoadButton = styled.div`
 
 const LoadingContainer = styled.div`
   height: 185px;
-  width: 90vw;
+  width: 94vw;
+  max-width: 1250px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  margin: 0 auto;
 `;
 
 const StagedPlaylists = styled.div`
   overflow-y: scroll;
   height: 100%;
+  width: 60vw;
+  min-width: 400px;
+  max-width: 750px;
 `;
 
 const StagedList = styled.div`
   display: flex;
   justify-content: flex-start;
+  align-items: center;
 `;
 
 const LoadingStatus = styled.img`
   width: 30px;
   height: 30px;
+  margin: 0 auto;
 `;
 
 export default function PlaylistSelection({ headerHeight, playerHeight }) {
@@ -301,7 +308,6 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
         icon = <LoadingStatus src={failed} />;
         break;
       default:
-        icon = <div>hola friends</div>;
         icon = <LoadingStatus src={staged} />;
     }
     return icon;

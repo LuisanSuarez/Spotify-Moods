@@ -51,7 +51,7 @@ const SIZES = {
   },
   sm: {
     containerWidth: "40vw",
-    containerMargin: "5px 50px 0",
+    containerMargin: "5px 5px 0",
     width: "30px",
     height: "30px",
     titleMargin: "3px 0 3px 16px",
