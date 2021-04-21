@@ -5,11 +5,17 @@ import styled from "styled-components";
 import Loading from "../components/utilities/Loading";
 import { useSong, useSongSelection } from "../hooks/SongContext";
 import { useTags, useTagsUpdating } from "../hooks/TagsContext";
-import { devUrl, prodUrl } from "../services/variables";
+import { COLOR, devUrl, prodUrl } from "../services/variables";
 import "./musicPlayer.css";
 import Track from "./Track";
 
 const TrackContainer = styled.div``;
+
+const styles = {
+  color: COLOR.thirtyDarker,
+  sliderHandleColor: COLOR.thirtyDarker,
+  sliderColor: COLOR.thirtyLight,
+};
 
 function MusicPlayer({ token }) {
   let song = useSong();
@@ -110,6 +116,7 @@ function MusicPlayer({ token }) {
           uris={selectedSong}
           callback={callback}
           autoPlay
+          styles={styles}
         />
       </div>
     </>
