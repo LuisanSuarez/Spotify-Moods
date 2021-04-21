@@ -239,10 +239,10 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
       playlist => playlist.status === "loaded"
     );
 
-    const updatedSavedPlaylists = [
+    const updatedSavedPlaylists = removeDuplicates([
       ...savedPlaylists,
       ...preparePlaylistForCache(successes),
-    ];
+    ]);
 
     setSavedPlaylists(updatedSavedPlaylists);
     localStorage.setItem(
@@ -251,8 +251,17 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     );
   };
 
+  const removeDuplicates = playlists => {
+    const playlistsCopy = JSON.parse(JSON.stringify(playlists));
+    const ids = new Set(playlistsCopy.map(playlist => playlist.id));
+    const uniquePlaylists = playlistsCopy.filter(playlist =>
+      ids.delete(playlist.id)
+    );
+    return uniquePlaylists;
+  };
+
   const preparePlaylistForCache = playlistArray => {
-    const arrayCopy = [...playlistArray];
+    const arrayCopy = JSON.parse(JSON.stringify(playlistArray));
     return arrayCopy.map(playlist => {
       const { name, id } = playlist;
       return { _id: id, id, name };
