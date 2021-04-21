@@ -339,9 +339,9 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
       )}
       <div onClick={selectAll}>Select All</div>
       <div onClick={clearAll}>Clear All</div>
-      <div onClick={toggleShowLoaded}>
+      {/* <div onClick={toggleShowLoaded}>
         {filterLoaded ? "Show" : "Hide"} loaded playlists
-      </div>
+      </div> */}
 
       <div style={{ overflowY: "scroll", height: "90vh" }}>
         {!filterLoaded ? (
