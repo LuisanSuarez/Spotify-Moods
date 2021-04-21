@@ -81,6 +81,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [selectedPlaylists, xyz] = useState(new Set());
   const [filterLoaded, setFilterLoaded] = useState(false);
   const [stagedPlaylists, setStagedPlaylists] = useState([]);
+  const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
 
   useEffect(async () => {
     const fetchedPlaylists =
@@ -133,7 +134,10 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
           playlist =>
             playlist.status === "loaded" || playlist.status === "failed"
         );
-      if (finishedLoadingPlaylists) updateCachedPlaylists(newStagedPlaylists);
+      if (finishedLoadingPlaylists) {
+        updateCachedPlaylists(newStagedPlaylists);
+        setIsLoadingPlaylists(false);
+      }
 
       return;
     }
@@ -183,6 +187,13 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   }, [stagedPlaylists]);
 
   const loadPlaylists = async () => {
+    const finishedLoadingPlaylists =
+      stagedPlaylists[0] &&
+      stagedPlaylists.every(
+        playlist => playlist.status === "loaded" || playlist.status === "failed"
+      );
+    if (finishedLoadingPlaylists || isLoadingPlaylists) return;
+
     clearAll();
 
     const newLoadingQueue = stagedPlaylists.map(playlist => {
@@ -194,6 +205,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
 
     setStagedPlaylists(newStagedPlaylists);
     setLoadingQueue(newLoadingQueue);
+    setIsLoadingPlaylists(true);
   };
 
   const loadOnePlaylist = async playlist => {
@@ -204,7 +216,6 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
       list => list.id === playlistId
     );
 
-    // const mock = await mockService().wait(4000);
     const result = await spotifyService().fetchTracks(playlist.tracks.href);
     if (!result.error) {
       const tracks = tracksService().sanitizeTracksArray(result.data);
@@ -249,6 +260,7 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   };
 
   const handlePlaylistClick = (playlist, index) => {
+    if (isLoadingPlaylists) return;
     const finishedLoadingPlaylists =
       stagedPlaylists[0] &&
       stagedPlaylists.every(
