@@ -54,7 +54,7 @@ export default function tracksService() {
 
   const addTracksToDatabase = async tracksArray => {
     const tracks = [...tracksArray];
-    while (tracks) {
+    while (tracks[0]) {
       const result = await axios.post(
         url + "api/loadTracksFromPlaylist",
         {
