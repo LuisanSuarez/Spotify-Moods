@@ -42,17 +42,18 @@ export default function Tracks({ allTags, displayPlaylist }) {
     let newTracks;
     let trackIds;
     try {
+      const nextLimit = limit;
       if (playlistId === "Untagged songs") {
-        newTracks = await playlistsService().getUntaggedSongs();
+        const skip = 0;
+        newTracks = await playlistsService().getUntaggedSongs(limit, skip);
       } else {
         trackIds = await playlistsService().getPlaylistTrackIds(playlistId);
-        const nextLimit = limit;
         newTracks = await tracksService().getTracksBulk(
           trackIds.slice(0, nextLimit)
         );
-        setLastPageFetched(1);
         setTrackIds(trackIds);
       }
+      setLastPageFetched(1);
     } catch (error) {
       console.error(error);
       alert("present error:", JSON.stringify(error));
@@ -72,20 +73,26 @@ export default function Tracks({ allTags, displayPlaylist }) {
     if (loading || fetchingMore) return;
     setFetchingMore(true);
     const startsFrom = lastPageFetched * limit;
+    const skip = startsFrom;
     const nextLimit = (lastPageFetched + 1) * limit;
 
     let newTracks;
     try {
-      newTracks = await tracksService().getTracksBulk(
-        trackIds.slice(startsFrom, nextLimit)
-      );
+      if (playlistId === "Untagged songs") {
+        newTracks = await playlistsService().getUntaggedSongs(limit, skip);
+      } else {
+        newTracks = await tracksService().getTracksBulk(
+          trackIds.slice(startsFrom, nextLimit)
+        );
+      }
     } catch (error) {
       alert("present error:", JSON.stringify(error));
       console.error(error);
       newTracks = [];
     } finally {
+      const newTracksArray = [...tracks, ...newTracks];
       setLastPageFetched(lastPageFetched + 1);
-      setTracks([...tracks, ...newTracks]);
+      setTracks(newTracksArray);
       setFetchingMore(false);
       setStartFetch(false);
     }

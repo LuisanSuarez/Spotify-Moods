@@ -24,8 +24,13 @@ export default function playlistsService() {
     return Array.isArray(result.data) ? result.data : [];
   };
 
-  const getUntaggedSongs = async () => {
+  const getUntaggedSongs = async (limit, skip) => {
+    options.params.limit = limit;
+    options.params.skip = skip;
     const result = await axios.get(url + "api/getUntaggedSongs", options);
+
+    delete options.params.limit;
+    delete options.params.skip;
     return Array.isArray(result.data) ? result.data : [];
   };
 
