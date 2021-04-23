@@ -80,6 +80,12 @@ export default function SideBar({
   };
 
   const handleList = list => {
+    if (showPlaylists) {
+      if (list.id === displayPlaylist.id) return;
+    }
+    if (!showPlaylists) {
+      if (list._id === displayPlaylist._id) return;
+    }
     setDisplayPlaylist(list);
   };
 
