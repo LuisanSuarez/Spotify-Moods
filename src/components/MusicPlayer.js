@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "react-spotify-web-playback";
 import styled from "styled-components";
 import Loading from "../components/utilities/Loading";
-import { useSong, useSongSelection } from "../hooks/SongContext";
+import { usePlayingSongSelection, useSong } from "../hooks/SongContext";
 import { useTags, useTagsUpdating } from "../hooks/TagsContext";
 import { COLOR, devUrl, prodUrl } from "../services/variables";
 import "./musicPlayer.css";
@@ -19,7 +19,7 @@ const styles = {
 
 function MusicPlayer({ token }) {
   let song = useSong();
-  const setSong = useSongSelection();
+  const setPlayingSong = usePlayingSongSelection();
   const contextTags = useTags();
   const setContextTags = useTagsUpdating();
   const player = useRef();
@@ -32,15 +32,12 @@ function MusicPlayer({ token }) {
 
   const callback = async state => {
     if (state.deviceId) sessionStorage.setItem("deviceId", state.deviceId);
-    let songTags;
-    if (state.nextTracks.length || state.previousTracks.length) {
-      songTags = await getTags(state.track.uri);
-      setTags(songTags);
-    }
+    let songTags = await getTags(state.track.uri);
+    setTags(songTags);
     const { uri } = state.track;
     setContextTags({ tags: songTags || tags, uri });
     setStatefulness(artistsAsArray(state));
-    setSong(uri);
+    setPlayingSong(uri);
   };
 
   const artistsAsArray = state => {
@@ -64,10 +61,6 @@ function MusicPlayer({ token }) {
   useEffect(async () => {
     const isPlaylist = state.nextTracks?.length || state.previousTracks?.length;
     if (isPlaylist && song === state.track.uri) return;
-    if (song) {
-      const songTags = await getTags(song);
-      setTags(songTags);
-    }
     setSelectedSong(song);
   }, [song]);
 
@@ -77,7 +70,7 @@ function MusicPlayer({ token }) {
 
   useEffect(async () => {
     if (!player.current) return;
-    if (!state.isPlaying && state.track?.uri !== song) {
+    if (!state.isPlaying) {
       player.current.togglePlay();
     }
   }, [wait]);

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useSong, useSongSelection } from "../hooks/SongContext";
+import { usePlayingSong, useSongSelection } from "../hooks/SongContext";
 import { useTags, useTagsUpdating } from "../hooks/TagsContext";
 import { COLOR, devUrl, prodUrl } from "../services/variables";
 import Tags from "./Tags";
@@ -104,7 +104,7 @@ export default function Track({
 }) {
   const [tags, setTags] = useState(trackTags ? trackTags : []);
   const setSong = useSongSelection();
-  const selectedSong = useSong();
+  const playingSong = usePlayingSong();
   const setContextTags = useTagsUpdating();
   const contextTags = useTags();
 
@@ -168,7 +168,7 @@ export default function Track({
 
   const handlePlay = uri => {
     setContextTags({ tags, uri });
-    setSong(uri);
+    setSong([uri]);
   };
 
   const editTag = editIndex => {
@@ -182,12 +182,12 @@ export default function Track({
   return (
     <TrackContainer>
       <TrackFocus
-        isSelected={uri === selectedSong && !isOnPlayer}
+        isSelected={uri === playingSong && !isOnPlayer}
         isOnPlayer={isOnPlayer}
       >
         <AlbumImage src={image} />
         <TrackInfo width={WIDTH}>
-          <Song isSelected={uri === selectedSong && !isOnPlayer}>
+          <Song isSelected={uri === playingSong && !isOnPlayer}>
             <SongName width={WIDTH}>{name}</SongName>
           </Song>
           <Artists>

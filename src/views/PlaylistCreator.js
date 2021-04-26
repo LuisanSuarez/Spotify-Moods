@@ -8,7 +8,7 @@ import Switch from "../components/utilities/Switch";
 import { useSongSelection } from "../hooks/SongContext";
 import authService from "../services/authService";
 import tracksService from "../services/tracksService";
-import { COLOR, devUrl, prodUrl, spotifyUrl } from "../services/variables";
+import { COLOR, devUrl, prodUrl } from "../services/variables";
 
 const CreatorContainer = styled.div`
   display: flex;
@@ -111,7 +111,8 @@ export default function PlaylistCreator({ tags, displayNewPlaylist }) {
     songs = songs.map(uri => "spotify:track:" + uri.id);
 
     // XXX WHAT TO DO IF IS EMPTY
-    startPlaylist(songs);
+    setSong(songs);
+    setCreatingPlaylist(false);
 
     let includedTagsSorted = [...includedTags].sort();
     let excludedTagsSorted = [...excludedTags].sort();
@@ -126,15 +127,6 @@ export default function PlaylistCreator({ tags, displayNewPlaylist }) {
     const deviceId = sessionStorage.getItem("deviceId");
     const uris = { uris: list };
     const params = { device_id: deviceId };
-
-    axios
-      .put(spotifyUrl + "player/play", uris, { headers, params })
-      .catch(err => {
-        if (err.response.status === "404") console.error({ err });
-      })
-      .finally(() => {
-        setCreatingPlaylist(false);
-      });
   };
 
   const filterExclusive = async (songs, shouldFilter) => {
