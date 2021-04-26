@@ -89,7 +89,7 @@ export default function PlayMusic({
 
     const createId = optionsObject => {
       let id = "";
-      id += optionsObject.onlyWithTags ? "exclusive" : "inclusive ";
+      id += optionsObject.onlyWithTags ? "exclusive" : "inclusive";
       optionsObject.includedTagsSorted.forEach(tag => (id += `+${tag}`));
       id += optionsObject.excludedTagsSorted.length ? "-excluding" : "";
       optionsObject.excludedTagsSorted.forEach(tag => (id += `-${tag}`));
