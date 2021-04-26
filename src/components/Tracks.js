@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useSongSelection } from "../hooks/SongContext";
 import { useTagsUpdating } from "../hooks/TagsContext";
 import playlistsService from "../services/playlistsService";
+import sortingService from "../services/sortingService";
 import tracksService from "../services/tracksService";
 import variables from "../services/variables";
 import Track from "./Track";
@@ -118,6 +119,26 @@ export default function Tracks({ allTags, displayPlaylist }) {
     }
   };
 
+  const sort = filter => {
+    let newTracks = [...tracks];
+    const fns = sortingService();
+    let filterFn;
+    switch (filter) {
+      case "name":
+        filterFn = fns.filterName;
+        break;
+      case "artist_name":
+        filterFn = fns.filterArtistName;
+        break;
+      case "tags":
+        filterFn = fns.filterTags;
+        break;
+      default:
+        filterFn = fns.filterName;
+    }
+    setTracks(newTracks.sort(filterFn));
+  };
+
   useEffect(() => {
     if (!scrollElement.current) return;
     const target = scrollElement.current;
@@ -142,6 +163,15 @@ export default function Tracks({ allTags, displayPlaylist }) {
       {displayPlaylist && !loading ? (
         <TracksContainer ref={scrollElement}>
           <h2 style={{ width: "100%" }}>{playlistName}</h2>
+          <div onClick={() => sort("name")}>
+            <h2>Sort by Name</h2>
+          </div>
+          <div onClick={() => sort("artist_name")}>
+            <h2>Sort by Artist Name</h2>
+          </div>
+          <div onClick={() => sort("tags")}>
+            <h2>Sort by Tags</h2>
+          </div>
           {tracks[0] ? (
             tracks.map((track, index) => (
               <Track
