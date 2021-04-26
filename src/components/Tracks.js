@@ -46,6 +46,8 @@ export default function Tracks({ allTags, displayPlaylist }) {
       if (playlistId === "Untagged songs") {
         const skip = 0;
         newTracks = await playlistsService().getUntaggedSongs(limit, skip);
+      } else if (displayPlaylist.createdByUser) {
+        newTracks = await tracksService().getTracksBulk(displayPlaylist.songs);
       } else {
         trackIds = await playlistsService().getPlaylistTrackIds(playlistId);
         newTracks = await tracksService().getTracksBulk(
@@ -75,7 +77,6 @@ export default function Tracks({ allTags, displayPlaylist }) {
     const startsFrom = lastPageFetched * limit;
     const skip = startsFrom;
     const nextLimit = (lastPageFetched + 1) * limit;
-
     let newTracks;
     try {
       if (playlistId === "Untagged songs") {

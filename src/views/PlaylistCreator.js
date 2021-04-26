@@ -66,7 +66,7 @@ const InclusiveText = styled.p`
 const EXCLUSIVE = "All of these tags";
 const INCLUSIVE = "Any of these tags";
 
-export default function PlaylistCreator({ tags }) {
+export default function PlaylistCreator({ tags, displayNewPlaylist }) {
   const [includedTags, setIncludedTags] = useState([]);
   const [excludedTags, setExcludedTags] = useState([]);
   const [onlyWithTags, setOnlyWithTags] = useState(true);
@@ -82,6 +82,8 @@ export default function PlaylistCreator({ tags }) {
 
   const createPlaylist = async () => {
     if (creatingPlaylist) return;
+    if (!includedTags.length) return;
+
     setCreatingPlaylist(true);
     const includedSongs = new Set();
     const excludedSongs = new Set();
@@ -105,9 +107,19 @@ export default function PlaylistCreator({ tags }) {
 
     songs = await filterExclusive(songs, onlyWithTags);
     songs = shuffle(songs);
+    const displaySongs = songs;
     songs = songs.map(uri => "spotify:track:" + uri.id);
+
     // XXX WHAT TO DO IF IS EMPTY
     startPlaylist(songs);
+
+    let includedTagsSorted = [...includedTags].sort();
+    let excludedTagsSorted = [...excludedTags].sort();
+    displayNewPlaylist(displaySongs, {
+      includedTagsSorted,
+      excludedTagsSorted,
+      onlyWithTags,
+    });
   };
 
   const startPlaylist = list => {

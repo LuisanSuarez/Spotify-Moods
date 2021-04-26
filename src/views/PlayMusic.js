@@ -29,7 +29,8 @@ export default function PlayMusic({
   playerHeight,
 }) {
   const [displayPlaylist, setDisplayPlaylist] = useState({});
-  const [allTags, setAllTags] = useState([]);
+  const [dbTags, setDbTags] = useState([]);
+  const [sidebarTags, setSidebarTags] = useState([]);
 
   const [allPlaylists, setAllPlaylists] = useState([]);
 
@@ -38,8 +39,22 @@ export default function PlayMusic({
   const contextTags = useTags();
 
   useEffect(async () => {
-    const allTags = await playlistsService().getTags();
-    setAllTags(allTags);
+    const dbTags = await playlistsService().getTags();
+    setDbTags(dbTags);
+    const sideBarTags = [
+      { _id: "Untagged songs", tag: "Untagged songs" },
+      ...dbTags,
+    ];
+    if (displayPlaylist.createdByUser) {
+      const { id } = displayPlaylist;
+      const createdPlaylist = {
+        id,
+        _id: id,
+        tag: id,
+      };
+      sideBarTags.unshift(createdPlaylist);
+    }
+    setSidebarTags(sideBarTags);
   }, [contextTags]);
 
   useEffect(async () => {
@@ -58,6 +73,45 @@ export default function PlayMusic({
     }
   }, []);
 
+  const displayNewPlaylist = (songs, optionsObject) => {
+    const createName = optionsObject => {
+      let name = "";
+      name += optionsObject.onlyWithTags
+        ? "Feels only with "
+        : "Feels also with ";
+      optionsObject.includedTagsSorted.forEach(tag => (name += ` ${tag}`));
+      name += optionsObject.excludedTagsSorted.length
+        ? " but doesn't feel "
+        : "";
+      optionsObject.excludedTagsSorted.forEach(tag => (name += ` ${tag}`));
+      return name;
+    };
+
+    const createId = optionsObject => {
+      let id = "";
+      id += optionsObject.onlyWithTags ? "exclusive" : "inclusive ";
+      optionsObject.includedTagsSorted.forEach(tag => (id += `+${tag}`));
+      id += optionsObject.excludedTagsSorted.length ? "-excluding" : "";
+      optionsObject.excludedTagsSorted.forEach(tag => (id += `-${tag}`));
+      return id;
+    };
+
+    const name = createName(optionsObject);
+    const id = createId(optionsObject);
+
+    const displayPlaylist = {
+      createdByUser: true,
+      songs,
+      optionsObject,
+      name,
+      id,
+      _id: id,
+      tag: id,
+    };
+    setDisplayPlaylist(displayPlaylist);
+    setSidebarTags([{ id, _id: id, tag: id }, ...sidebarTags]);
+  };
+
   return (
     <ContainerFlex
       sidebarWidth={sidebarWidth}
@@ -66,18 +120,21 @@ export default function PlayMusic({
     >
       <SideBar
         playlists={allPlaylists}
-        tags={[{ _id: "Untagged songs", tag: "Untagged songs" }, ...allTags]}
+        tags={sidebarTags}
         displayPlaylist={displayPlaylist}
         setDisplayPlaylist={setDisplayPlaylist}
         setSidebarWidth={setSidebarWidth}
         sidebarMB={sidebarMB}
       />
       <MusicFlex>
-        <PlaylistCreator tags={allTags} />
+        <PlaylistCreator
+          tags={dbTags}
+          displayNewPlaylist={displayNewPlaylist}
+        />
         <Tracks
           className="musics"
           authTokens={tokens}
-          allTags={allTags}
+          allTags={dbTags}
           displayPlaylist={displayPlaylist}
         />
       </MusicFlex>
