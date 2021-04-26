@@ -53,7 +53,7 @@ export default function Tracks({ allTags, displayPlaylist }) {
         const skip = 0;
         newTracks = await playlistsService().getUntaggedSongs(limit, skip);
       } else if (displayPlaylist.createdByUser) {
-        newTracks = await tracksService().getTracksBulk(displayPlaylist.songs);
+        newTracks = displayPlaylist.songs;
       } else {
         trackIds = await playlistsService().getPlaylistTrackIds(playlistId);
         newTracks = await tracksService().getTracksBulk(
