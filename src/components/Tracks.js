@@ -134,7 +134,7 @@ export default function Tracks({ allTags, displayPlaylist }) {
   const handlePlay = ({ uri, tags, index }) => {
     setContextTags({ tags, uri });
     const songs = tracks.map(uri => "spotify:track:" + uri.id);
-    setSong(songs);
+    setSong(songs.slice(index));
   };
 
   return (
