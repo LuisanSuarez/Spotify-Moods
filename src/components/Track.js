@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { usePlayingSong, useSongSelection } from "../hooks/SongContext";
+import { usePlayingSong } from "../hooks/SongContext";
 import { useTags, useTagsUpdating } from "../hooks/TagsContext";
 import { COLOR, devUrl, prodUrl } from "../services/variables";
 import Tags from "./Tags";
@@ -100,10 +100,11 @@ export default function Track({
   track = { image: "", name: "", uri: "", artists: [] },
   trackTags,
   allTags = [],
+  index,
+  handlePlay,
   isOnPlayer = false,
 }) {
   const [tags, setTags] = useState(trackTags ? trackTags : []);
-  const setSong = useSongSelection();
   const playingSong = usePlayingSong();
   const setContextTags = useTagsUpdating();
   const contextTags = useTags();
@@ -166,11 +167,6 @@ export default function Track({
     }
   }, [contextTags]);
 
-  const handlePlay = uri => {
-    setContextTags({ tags, uri });
-    setSong([uri]);
-  };
-
   const editTag = editIndex => {
     // figure out a way to edit tags
   };
@@ -207,9 +203,13 @@ export default function Track({
           label="add new tag"
           submit={handleNewTag}
         />
-        <PlayButtonContainer onClick={() => handlePlay(uri)}>
-          <PlayButton />
-        </PlayButtonContainer>
+        {!isOnPlayer ? (
+          <PlayButtonContainer onClick={() => handlePlay({ uri, tags, index })}>
+            <PlayButton />
+          </PlayButtonContainer>
+        ) : (
+          ""
+        )}
       </TrackFocus>
     </TrackContainer>
   );

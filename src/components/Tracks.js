@@ -1,6 +1,8 @@
 import { throttle } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { useSongSelection } from "../hooks/SongContext";
+import { useTagsUpdating } from "../hooks/TagsContext";
 import playlistsService from "../services/playlistsService";
 import tracksService from "../services/tracksService";
 import variables from "../services/variables";
@@ -21,6 +23,9 @@ const TracksContainer = styled.div`
 export default function Tracks({ allTags, displayPlaylist }) {
   const playlistId = displayPlaylist.id || displayPlaylist.tag;
   const playlistName = displayPlaylist.name || displayPlaylist.tag;
+
+  const setContextTags = useTagsUpdating();
+  const setSong = useSongSelection();
 
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -126,6 +131,12 @@ export default function Tracks({ allTags, displayPlaylist }) {
     };
   }, [scrollElement.current, displayPlaylist]);
 
+  const handlePlay = ({ uri, tags, index }) => {
+    setContextTags({ tags, uri });
+    const songs = tracks.map(uri => "spotify:track:" + uri.id);
+    setSong(songs);
+  };
+
   return (
     <>
       {displayPlaylist && !loading ? (
@@ -138,6 +149,8 @@ export default function Tracks({ allTags, displayPlaylist }) {
                 track={track}
                 trackTags={track.tags}
                 allTags={allTags}
+                index={index}
+                handlePlay={handlePlay}
               />
             ))
           ) : playlistId === variables.newUserId ? (
