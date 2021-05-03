@@ -19,9 +19,12 @@ function Login({ headerHeight }) {
   // const { user, isAuthenticated, isLoading } = useAuth0();
 
   const [user, setUser] = useState(false);
-  useEffect(async () => {
-    const user = await authService().getUser();
-    setUser(user.display_name ? user : false);
+  useEffect(() => {
+    async function getAndSetUser() {
+      const user = await authService().getUser();
+      setUser(user.display_name ? user : false);
+    }
+    getAndSetUser();
   }, []);
 
   const handleLogout = () => {

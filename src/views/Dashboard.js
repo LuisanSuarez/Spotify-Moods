@@ -1,6 +1,5 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Route, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import MusicPlayer from "../components/MusicPlayer";
@@ -30,10 +29,6 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
     JSON.parse(localStorage.getItem("expiryTime")) || null
   );
 
-  const [headers, setHeaders] = useState(
-    { authorization: "Bearer " + tokens?.access_token } || ""
-  );
-
   const [sidebarMB, setSidebarMB] = useState("52px");
 
   const player = useRef(null);
@@ -42,9 +37,8 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
   const setTokenContext = useTokenSelection();
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
-  const { user, isAuthenticated, isLoading } = useAuth0();
 
-  useEffect(async () => {
+  useEffect(() => {
     if (dbName && tokens) return;
     const urlParams = new URLSearchParams(window.location.pathname);
     const newDbName = urlParams.get("dbName");
@@ -59,7 +53,6 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
       localStorage.setItem("tokens", JSON.stringify(tokens));
       setTokens(tokens);
       setTokenContext(tokens);
-      setHeaders({ authorization: "Bearer " + tokens.access_token });
 
       const newExpiryTime = new Date().getTime() + 3600 * 1000;
       localStorage.setItem("expiryTime", JSON.stringify(newExpiryTime));
@@ -92,7 +85,6 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
             localStorage.setItem("tokens", JSON.stringify(tokens));
             setTokens(tokens);
 
-            setHeaders({ authorization: "Bearer " + newAccessToken });
             localStorage.setItem(
               "headers",
               JSON.stringify({ authorization: "Bearer " + newAccessToken })

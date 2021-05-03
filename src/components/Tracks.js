@@ -37,7 +37,7 @@ export default function Tracks({ allTags, displayPlaylist }) {
   const scrollElement = useRef(null);
   const limit = 20;
 
-  useEffect(async () => {
+  useEffect(() => {
     if (!playlistId) return;
 
     setLoading(true);
@@ -45,32 +45,36 @@ export default function Tracks({ allTags, displayPlaylist }) {
       setLoading(false);
       return;
     }
-    let newTracks;
-    let trackIds;
-    try {
-      const nextLimit = limit;
-      if (playlistId === "Untagged songs") {
-        const skip = 0;
-        newTracks = await playlistsService().getUntaggedSongs(limit, skip);
-      } else if (displayPlaylist.createdByUser) {
-        newTracks = displayPlaylist.songs;
-      } else {
-        trackIds = await playlistsService().getPlaylistTrackIds(playlistId);
-        newTracks = await tracksService().getTracksBulk(
-          trackIds.slice(0, nextLimit)
-        );
-        setTrackIds(trackIds);
+
+    async function getAndSetTracks() {
+      let newTracks;
+      let trackIds;
+      try {
+        const nextLimit = limit;
+        if (playlistId === "Untagged songs") {
+          const skip = 0;
+          newTracks = await playlistsService().getUntaggedSongs(limit, skip);
+        } else if (displayPlaylist.createdByUser) {
+          newTracks = displayPlaylist.songs;
+        } else {
+          trackIds = await playlistsService().getPlaylistTrackIds(playlistId);
+          newTracks = await tracksService().getTracksBulk(
+            trackIds.slice(0, nextLimit)
+          );
+          setTrackIds(trackIds);
+        }
+        setLastPageFetched(1);
+      } catch (error) {
+        console.error(error);
+        alert("present error:", JSON.stringify(error));
+        console.error(error);
+        newTracks = [];
+      } finally {
+        setTracks(newTracks);
+        setLoading(false);
       }
-      setLastPageFetched(1);
-    } catch (error) {
-      console.error(error);
-      alert("present error:", JSON.stringify(error));
-      console.error(error);
-      newTracks = [];
-    } finally {
-      setTracks(newTracks);
-      setLoading(false);
     }
+    getAndSetTracks();
   }, [displayPlaylist]);
 
   useEffect(() => {

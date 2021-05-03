@@ -38,47 +38,56 @@ export default function PlayMusic({
 
   const contextTags = useTags();
 
-  useEffect(async () => {
-    const dbTags = await playlistsService().getTags();
-    setDbTags(dbTags);
-    const sideBarTags = [
-      { _id: "Untagged songs", tag: "Untagged songs" },
-      ...dbTags,
-    ];
-    if (displayPlaylist.createdByUser) {
-      const { id } = displayPlaylist;
-      const createdPlaylist = {
-        id,
-        _id: id,
-        tag: id,
-      };
-      sideBarTags.unshift(createdPlaylist);
+  useEffect(() => {
+    async function getAndSetTags() {
+      const dbTags = await playlistsService().getTags();
+      setDbTags(dbTags);
+      const sideBarTags = [
+        { _id: "Untagged songs", tag: "Untagged songs" },
+        ...dbTags,
+      ];
+      if (displayPlaylist.createdByUser) {
+        const { id } = displayPlaylist;
+        const createdPlaylist = {
+          id,
+          _id: id,
+          tag: id,
+        };
+        sideBarTags.unshift(createdPlaylist);
+      }
+      setSidebarTags(sideBarTags);
     }
-    setSidebarTags(sideBarTags);
+    getAndSetTags();
   }, [contextTags]);
 
-  useEffect(async () => {
-    const savedPlaylists =
-      JSON.parse(localStorage.getItem("saved_playlists")) ||
-      (await playlistsService().getPlaylistsNames());
-    localStorage.setItem("saved_playlists", JSON.stringify(savedPlaylists));
-    if (savedPlaylists.length) {
-      setAllPlaylists(savedPlaylists);
-      setDisplayPlaylist(savedPlaylists[0]);
-    } else {
-      setDisplayPlaylist({
-        id: variables.newUserId,
-        name: variables.newUserWelcome,
-      });
+  useEffect(() => {
+    async function getAndSetSavedPlaylists() {
+      const savedPlaylists =
+        JSON.parse(localStorage.getItem("saved_playlists")) ||
+        (await playlistsService().getPlaylistsNames());
+      localStorage.setItem("saved_playlists", JSON.stringify(savedPlaylists));
+      if (savedPlaylists.length) {
+        setAllPlaylists(savedPlaylists);
+        setDisplayPlaylist(savedPlaylists[0]);
+      } else {
+        setDisplayPlaylist({
+          id: variables.newUserId,
+          name: variables.newUserWelcome,
+        });
+      }
     }
+    getAndSetSavedPlaylists();
   }, []);
 
-  useEffect(async () => {
-    const savedPlaylists = await playlistsService().getPlaylistsNames();
-    if (JSON.stringify(savedPlaylists) !== JSON.stringify(allPlaylists)) {
-      localStorage.setItem("saved_playlists", JSON.stringify(savedPlaylists));
-      setAllPlaylists(savedPlaylists);
+  useEffect(() => {
+    async function compareAndSetSavedPlaylists() {
+      const savedPlaylists = await playlistsService().getPlaylistsNames();
+      if (JSON.stringify(savedPlaylists) !== JSON.stringify(allPlaylists)) {
+        localStorage.setItem("saved_playlists", JSON.stringify(savedPlaylists));
+        setAllPlaylists(savedPlaylists);
+      }
     }
+    compareAndSetSavedPlaylists();
   }, [allPlaylists]);
 
   const displayNewPlaylist = (songs, optionsObject) => {

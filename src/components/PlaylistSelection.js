@@ -83,27 +83,31 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
   const [stagedPlaylists, setStagedPlaylists] = useState([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(false);
 
-  useEffect(async () => {
-    const fetchedPlaylists =
-      JSON.parse(localStorage.getItem("spotify_playlists")) ||
-      (await spotifyService().fetchPlaylists());
+  useEffect(() => {
+    async function fetchAndSetPlaylists() {
+      const fetchedPlaylists =
+        JSON.parse(localStorage.getItem("spotify_playlists")) ||
+        (await spotifyService().fetchPlaylists());
 
-    if (!fetchedPlaylists.error) {
-      const likedSongs = {
-        name: "Liked Songs",
-        id: "Liked_Songs",
-        tracks: { href: spotifySavedTracks },
-        images: [likedSongsImg],
-      };
+      if (!fetchedPlaylists.error) {
+        const likedSongs = {
+          name: "Liked Songs",
+          id: "Liked_Songs",
+          tracks: { href: spotifySavedTracks },
+          images: [likedSongsImg],
+        };
 
-      setPlaylists([likedSongs, ...fetchedPlaylists.data]);
-      localStorage.setItem(
-        "spotify_playlists",
-        JSON.stringify(fetchedPlaylists)
-      );
-    } else {
-      alert(fetchedPlaylists.msg);
+        setPlaylists([likedSongs, ...fetchedPlaylists.data]);
+        localStorage.setItem(
+          "spotify_playlists",
+          JSON.stringify(fetchedPlaylists)
+        );
+      } else {
+        alert(fetchedPlaylists.msg);
+      }
     }
+
+    fetchAndSetPlaylists();
   }, []);
 
   useEffect(() => {
@@ -124,45 +128,48 @@ export default function PlaylistSelection({ headerHeight, playerHeight }) {
     setFilteredPlaylists(filteredPlaylists);
   }, [savedPlaylists]);
 
-  useEffect(async () => {
-    const newLoadingQueue = JSON.parse(JSON.stringify(loadingQueue));
-    const newStagedPlaylists = JSON.parse(JSON.stringify(stagedPlaylists));
-    if (!newLoadingQueue[0]) {
-      const finishedLoadingPlaylists =
-        newStagedPlaylists[0] &&
-        newStagedPlaylists.every(
-          playlist =>
-            playlist.status === "loaded" || playlist.status === "failed"
-        );
-      if (finishedLoadingPlaylists) {
-        updateCachedPlaylists(newStagedPlaylists);
-        setIsLoadingPlaylists(false);
+  useEffect(() => {
+    async function updatePlaylistLoadingStatus() {
+      const newLoadingQueue = JSON.parse(JSON.stringify(loadingQueue));
+      const newStagedPlaylists = JSON.parse(JSON.stringify(stagedPlaylists));
+      if (!newLoadingQueue[0]) {
+        const finishedLoadingPlaylists =
+          newStagedPlaylists[0] &&
+          newStagedPlaylists.every(
+            playlist =>
+              playlist.status === "loaded" || playlist.status === "failed"
+          );
+        if (finishedLoadingPlaylists) {
+          updateCachedPlaylists(newStagedPlaylists);
+          setIsLoadingPlaylists(false);
+        }
+
+        return;
       }
 
-      return;
+      const { status } = newLoadingQueue[0];
+
+      if (status === "staged") {
+        const currentPlaylistId = newLoadingQueue[0].id;
+        const stagedIndex = newStagedPlaylists.findIndex(
+          stagedPlaylist => stagedPlaylist.id === currentPlaylistId
+        );
+
+        newStagedPlaylists[stagedIndex].status = "loading";
+        setStagedPlaylists(newStagedPlaylists);
+      }
+
+      if (status === "loading") {
+        const result = await loadOnePlaylist(newLoadingQueue[0]);
+        setStagedPlaylists(result);
+      }
+
+      if (status === "loaded" || status === "failed") {
+        newLoadingQueue.shift();
+        setLoadingQueue(newLoadingQueue);
+      }
     }
-
-    const { status } = newLoadingQueue[0];
-
-    if (status === "staged") {
-      const currentPlaylistId = newLoadingQueue[0].id;
-      const stagedIndex = newStagedPlaylists.findIndex(
-        stagedPlaylist => stagedPlaylist.id === currentPlaylistId
-      );
-
-      newStagedPlaylists[stagedIndex].status = "loading";
-      setStagedPlaylists(newStagedPlaylists);
-    }
-
-    if (status === "loading") {
-      const result = await loadOnePlaylist(newLoadingQueue[0]);
-      setStagedPlaylists(result);
-    }
-
-    if (status === "loaded" || status === "failed") {
-      newLoadingQueue.shift();
-      setLoadingQueue(newLoadingQueue);
-    }
+    updatePlaylistLoadingStatus();
   }, [loadingQueue]);
 
   useEffect(() => {

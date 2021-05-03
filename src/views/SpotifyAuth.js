@@ -21,17 +21,20 @@ export default function SpotifyLogin({ headerHeight, playerHeight }) {
   const [user, setUser] = useState({});
   const tokens = JSON.parse(localStorage.getItem("tokens"));
 
-  useEffect(async () => {
-    const headers = {
-      authorization: "Bearer " + tokens.access_token,
-    };
+  useEffect(() => {
+    async function getAndSetUserData() {
+      const headers = {
+        authorization: "Bearer " + tokens.access_token,
+      };
 
-    const url = "https://api.spotify.com/v1/me";
+      const url = "https://api.spotify.com/v1/me";
 
-    const user = await axios.get(url, { headers });
+      const user = await axios.get(url, { headers });
 
-    setUser(user.data);
-    setLoading(false);
+      setUser(user.data);
+      setLoading(false);
+    }
+    getAndSetUserData();
   }, []);
 
   return (

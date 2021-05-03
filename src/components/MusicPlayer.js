@@ -58,7 +58,7 @@ function MusicPlayer({ token }) {
     return newState;
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     const isPlaylist = state.nextTracks?.length || state.previousTracks?.length;
     if (isPlaylist && song === state.track.uri) return;
     setSelectedSong(song);
@@ -68,7 +68,7 @@ function MusicPlayer({ token }) {
     setWait(!wait);
   }, [selectedSong]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (!player.current) return;
     if (!state.isPlaying) {
       player.current.togglePlay();
