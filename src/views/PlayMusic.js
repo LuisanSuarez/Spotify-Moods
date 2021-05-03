@@ -73,6 +73,14 @@ export default function PlayMusic({
     }
   }, []);
 
+  useEffect(async () => {
+    const savedPlaylists = await playlistsService().getPlaylistsNames();
+    if (JSON.stringify(savedPlaylists) !== JSON.stringify(allPlaylists)) {
+      localStorage.setItem("saved_playlists", JSON.stringify(savedPlaylists));
+      setAllPlaylists(savedPlaylists);
+    }
+  }, [allPlaylists]);
+
   const displayNewPlaylist = (songs, optionsObject) => {
     const createName = optionsObject => {
       let name = "";
