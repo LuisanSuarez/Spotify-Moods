@@ -34,6 +34,7 @@ function MusicPlayer({ token }) {
   const [songs, setSongs] = useState(songObject.songs);
   const [wait, setWait] = useState(true);
   const [tags, setTags] = useState([]);
+  const [dbTags, setDbTags] = useState([]);
   const [offset, setOffset] = useState(songObject.offset);
   const limit = 20;
 
@@ -112,6 +113,15 @@ function MusicPlayer({ token }) {
     return tags;
   };
 
+  useEffect(() => {
+    function getAndSetTags() {
+      const dbTags = playlistsService()
+        .getTags()
+        .then(res => setDbTags(res));
+    }
+    getAndSetTags();
+  }, [contextTags]);
+
   return token ? (
     <>
       {" "}
@@ -123,6 +133,7 @@ function MusicPlayer({ token }) {
             trackTags={tags}
             tagsCount={{}}
             isOnPlayer
+            allTags={dbTags}
           />
         </TrackContainer>
       ) : (
