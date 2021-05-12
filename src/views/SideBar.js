@@ -26,7 +26,8 @@ const NavBar = styled.nav`
 const NavButton = styled.div`
   width: 50%;
   padding: 0 2.5px;
-  color: ${props => (props.isSelected ? COLOR.sixtyLighter : COLOR.sixty)};
+  color: ${props =>
+    props.isSelected ? COLOR.sixtyLighter : COLOR.thirtyLighter};
   text-decoration: ${props => (props.isSelected ? "underline" : "none")};
 `;
 

@@ -21,6 +21,20 @@ const TracksContainer = styled.div`
   overflow-y: scroll;
 `;
 
+const SortingOptions = styled.div`
+  display: none;
+  flex-direction: column;
+  margin: 0;
+  margin-left: 0;
+  & div {
+    display: flex;
+    justify-content: flex-start;
+    & h2 {
+      margin: 2px 0;
+    }
+  }
+`;
+
 export default function Tracks({ allTags, displayPlaylist }) {
   const playlistId = displayPlaylist.id || displayPlaylist.tag;
   const playlistName = displayPlaylist.name || displayPlaylist.tag;
@@ -168,15 +182,17 @@ export default function Tracks({ allTags, displayPlaylist }) {
       {displayPlaylist && !loading ? (
         <TracksContainer ref={scrollElement}>
           <h2 style={{ width: "100%" }}>{playlistName}</h2>
-          <div onClick={() => sort("name")}>
-            <h2>Sort by Name</h2>
-          </div>
-          <div onClick={() => sort("artist_name")}>
-            <h2>Sort by Artist Name</h2>
-          </div>
-          <div onClick={() => sort("tags")}>
-            <h2>Sort by Tags</h2>
-          </div>
+          <SortingOptions>
+            <div onClick={() => sort("name")}>
+              <h2>Sort by Name</h2>
+            </div>
+            <div onClick={() => sort("artist_name")}>
+              <h2>Sort by Artist Name</h2>
+            </div>
+            <div onClick={() => sort("tags")}>
+              <h2>Sort by Tags</h2>
+            </div>
+          </SortingOptions>
           {tracks[0] ? (
             tracks.map((track, index) => (
               <Track
