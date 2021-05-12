@@ -26,7 +26,7 @@ export default function Tracks({ allTags, displayPlaylist }) {
   const playlistName = displayPlaylist.name || displayPlaylist.tag;
 
   const setContextTags = useTagsUpdating();
-  const setSong = useSongSelection();
+  const setPlaylist = useSongSelection();
 
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -159,7 +159,8 @@ export default function Tracks({ allTags, displayPlaylist }) {
   const handlePlay = ({ uri, tags, index }) => {
     setContextTags({ tags, uri });
     const songs = tracks.map(uri => "spotify:track:" + uri.id);
-    setSong(songs.slice(index));
+    const { createdByUser } = displayPlaylist;
+    setPlaylist({ songs, offset: index, playlistId, createdByUser });
   };
 
   return (

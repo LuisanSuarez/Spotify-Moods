@@ -3,8 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "react-spotify-web-playback";
 import styled from "styled-components";
 import Loading from "../components/utilities/Loading";
-import { usePlayingSongSelection, useSong } from "../hooks/SongContext";
+import {
+  usePlayingSongSelection,
+  useSong,
+  useSongSelection,
+} from "../hooks/SongContext";
 import { useTags, useTagsUpdating } from "../hooks/TagsContext";
+import playlistsService from "../services/playlistsService";
+import tracksService from "../services/tracksService";
 import { COLOR, devUrl, prodUrl } from "../services/variables";
 import "./musicPlayer.css";
 import Track from "./Track";
@@ -18,26 +24,46 @@ const styles = {
 };
 
 function MusicPlayer({ token }) {
-  let song = useSong();
+  let songObject = useSong();
   const setPlayingSong = usePlayingSongSelection();
+  const setPlaylist = useSongSelection();
   const contextTags = useTags();
   const setContextTags = useTagsUpdating();
   const player = useRef();
   const [state, setStatefulness] = useState({});
-  const [selectedSong, setSelectedSong] = useState(song);
+  const [songs, setSongs] = useState(songObject.songs);
   const [wait, setWait] = useState(true);
   const [tags, setTags] = useState([]);
+  const [offset, setOffset] = useState(songObject.offset);
+  const limit = 20;
 
   const url = process.env.NODE_ENV === "development" ? devUrl : prodUrl;
 
   const callback = async state => {
+    if (songs && state.nextTracks?.length < 2) await addMoreSongsToQueue();
+
     if (state.deviceId) sessionStorage.setItem("deviceId", state.deviceId);
-    let songTags = await getTags(state.track.uri);
-    setTags(songTags);
     const { uri } = state.track;
+    let songTags = await getTags(uri);
+    setTags(songTags);
     setContextTags({ tags: songTags || tags, uri });
     setStatefulness(artistsAsArray(state));
     setPlayingSong(uri);
+  };
+
+  const addMoreSongsToQueue = async () => {
+    const { createdByUser, playlistId } = songObject;
+    if (createdByUser) return;
+    const start = songs.length;
+    const nextLimit = start + limit;
+    const trackIds = await playlistsService().getPlaylistTrackIds(playlistId);
+    const newTracks = await tracksService().getTracksBulk(
+      trackIds.slice(start, nextLimit)
+    );
+    const newSongs = newTracks.map(uri => "spotify:track:" + uri.id);
+    const newSongArray = [...songs, ...newSongs];
+    const newOffset = start - (state.nextTracks.length ? 2 : 1);
+    setPlaylist({ songs: newSongArray, offset: newOffset });
   };
 
   const artistsAsArray = state => {
@@ -60,13 +86,14 @@ function MusicPlayer({ token }) {
 
   useEffect(() => {
     const isPlaylist = state.nextTracks?.length || state.previousTracks?.length;
-    if (isPlaylist && song === state.track.uri) return;
-    setSelectedSong(song);
-  }, [song]);
+    if (isPlaylist && songObject === state.track.uri) return;
+    setSongs(songObject.songs);
+    setOffset(songObject.offset);
+  }, [songObject]);
 
   useEffect(() => {
     setWait(!wait);
-  }, [selectedSong]);
+  }, [songs]);
 
   useEffect(() => {
     if (!player.current) return;
@@ -106,7 +133,8 @@ function MusicPlayer({ token }) {
           className="players"
           ref={player}
           token={token}
-          uris={selectedSong}
+          uris={songs}
+          offset={offset}
           callback={callback}
           autoPlay
           styles={styles}

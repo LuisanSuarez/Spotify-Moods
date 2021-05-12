@@ -24,8 +24,10 @@ export function usePlayingSongSelection() {
 export function SongProvider({ children }) {
   const [song, setSong] = useState([""]);
   const [playingSong, setPlayingSong] = useState("");
-  function selectSong(uri) {
-    setSong(uri);
+  function selectSong(songObject) {
+    setSong(songObject);
+    // shape
+    // { songs: uris[], offset: index, playlistId, createdByUser: true|false }
   }
 
   function setCurentSong(uri) {
