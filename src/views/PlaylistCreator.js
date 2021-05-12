@@ -6,7 +6,6 @@ import TagsSelection from "../components/TagsSelection";
 import Loading from "../components/utilities/Loading";
 import Switch from "../components/utilities/Switch";
 import { useSongSelection } from "../hooks/SongContext";
-import authService from "../services/authService";
 import tracksService from "../services/tracksService";
 import { COLOR, devUrl, prodUrl } from "../services/variables";
 
@@ -78,8 +77,6 @@ export default function PlaylistCreator({ tags, displayNewPlaylist }) {
 
   const tagLabels = tags.map(tag => tag.tag);
 
-  let headers = authService().getHeaders();
-
   const createPlaylist = async () => {
     if (creatingPlaylist) return;
     if (!includedTags.length) return;
@@ -116,17 +113,12 @@ export default function PlaylistCreator({ tags, displayNewPlaylist }) {
 
     let includedTagsSorted = [...includedTags].sort();
     let excludedTagsSorted = [...excludedTags].sort();
+
     displayNewPlaylist(displaySongs, {
       includedTagsSorted,
       excludedTagsSorted,
       onlyWithTags,
     });
-  };
-
-  const startPlaylist = list => {
-    const deviceId = sessionStorage.getItem("deviceId");
-    const uris = { uris: list };
-    const params = { device_id: deviceId };
   };
 
   const filterExclusive = async (songs, shouldFilter) => {
