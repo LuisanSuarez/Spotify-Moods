@@ -20,9 +20,7 @@ const DashboardDiv = styled.div`
 `;
 
 function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
-  const [tokens, setTokens] = useState(
-    JSON.parse(localStorage.getItem("tokens"))
-  );
+  const [tokens, setTokens] = useState(null);
   const [dbName, setDbName] = useState(localStorage.getItem("dbName") || null);
 
   const [expiryTime, setExpiryTime] = useState(
@@ -40,7 +38,8 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
 
   useEffect(() => {
     if (dbName && tokens) return;
-    const urlParams = new URLSearchParams(window.location.pathname);
+    const { pathname } = window.location;
+    const urlParams = new URLSearchParams(pathname);
     const newDbName = urlParams.get("dbName");
     const access_token = urlParams.get("access_token");
     const refresh_token = urlParams.get("refresh_token");
@@ -58,11 +57,20 @@ function Dashboard({ setPlayerHeight, playerHeight, headerHeight }) {
       localStorage.setItem("expiryTime", JSON.stringify(newExpiryTime));
       setExpiryTime(newExpiryTime);
     } else {
-      alert("you session has ended");
-      localStorage.setItem("redirectedToLogin", true);
-      redirectToLogin();
+      const tokens = JSON.parse(localStorage.getItem("tokens"));
+      if (tokens) {
+        setTokens(tokens);
+      } else {
+        alert("you session has ended");
+        localStorage.setItem("redirectedToLogin", true);
+        redirectToLogin();
+      }
     }
   }, []);
+
+  useEffect(() => {
+    console.log({ tokens });
+  }, [tokens]);
 
   useEffect(() => {
     const tokenRefresh = setInterval(() => {
